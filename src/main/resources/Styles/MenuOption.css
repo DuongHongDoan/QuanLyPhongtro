@@ -1,0 +1,61 @@
+/* vbox chua all */
+.vb_container {
+    -fx-background-color: #FFFFFF;
+}
+
+/* anchorpane nam de len vbox */
+.anchor_container {
+    -fx-background-radius: 10;
+    -fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 3, 0, 0, 3);
+}
+
+/* vbox chua icon va label */
+.vb_top_container {
+    -fx-alignment: center;
+}
+
+.vb_top_container FontAwesomeIconView {
+    -fx-fill: #FFC14B;
+}
+
+.vb_top_container Text {
+    -fx-font-size: 1.6em;
+    -fx-font-family: "Calibri Light";
+    -fx-fill: #FFFFFF;
+}
+
+.vb_top_container Label {
+    -fx-font-size: 1.6em;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+}
+
+/* vbox chua cac nut dieu khien */
+.vb_center_container {
+    -fx-alignment: center_left;
+    -fx-spacing: 15;
+    -fx-padding: 5;
+}
+
+Button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 1.4em;
+    -fx-font-weight: 600;
+    -fx-alignment: center_left;
+    -fx-effect: dropshadow(three-pass-box, #D3D3D3, 2, 0, 0, 2);
+}
+
+Button:hover {
+    -fx-cursor: hand;
+}
+
+/*Button:focused {
+    -fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);
+    -fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);
+}*/
+
+FontAwesomeIconView {
+    -fx-fill: #FFFFFF;
+}

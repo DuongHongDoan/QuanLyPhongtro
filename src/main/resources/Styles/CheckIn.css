@@ -1,0 +1,63 @@
+.title {
+    -fx-fill: #FFC14B;
+    -fx-font-size: 1.8em;
+    -fx-font-weight: 700;
+}
+
+/* khung anchor chua noi dung dien thong tin */
+.form_container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(three-pass-box, #D3D3D3, 4, 0, 0, 4);
+}
+
+.info_rend {
+    -fx-pref-width: 150;
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 0.2 0;
+    -fx-border-color: #000000;
+    -fx-text-fill: #000000;
+    -fx-font-size: 1.1em;
+    -fx-prompt-text-fill: #c7c6c6;
+}
+
+Text {
+    -fx-fill: linear-gradient(to bottom right, #17EA9D, #6078EA);
+    -fx-font-size: 1.4em;
+    -fx-font-weight: 700;
+}
+
+Label {
+    -fx-font-size: 1.2em;
+    -fx-text-fill: #000000;
+}
+
+.tf {
+    -fx-pref-width: 200;
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 0.2 0;
+    -fx-border-color: #000000;
+    -fx-text-fill: #000000;
+    -fx-font-size: 1.1em;
+    -fx-prompt-text-fill: #c7c6c6;
+}
+
+ComboBox {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 0.2 0;
+    -fx-border-color: #000000;
+    -fx-text-fill: #000000;
+    -fx-prompt-text-fill: red;
+}
+
+Button {
+    -fx-background-radius: 20;
+    -fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);
+    -fx-font-size: 1.4em;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, #D3D3D3, 4, 0, 0, 4);
+}
+
+Button:hover {
+    -fx-cursor: hand;
+}

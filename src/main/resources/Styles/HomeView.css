@@ -1,0 +1,80 @@
+/* anchor chua all */
+.anchor_container {
+    -fx-background-color: #FFFFFF;
+}
+
+/* anchor nam chong len */
+.anchor_child {
+    -fx-background-radius: 10;
+    -fx-background-color: #EEEEEE;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 4, 0, 0, 4);
+}
+
+/* khung chua nen */
+.frame {
+    -fx-spacing: 10;
+    -fx-padding: 8;
+    -fx-background-radius: 20;
+    -fx-background-color: #FFFFFF;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 4, 0, 0, 4);
+}
+
+/* hbox chua thong ke */
+.hb_container {
+    -fx-spacing: 10;
+    -fx-padding: 8;
+    -fx-background-radius: 20;
+    -fx-background-color: #FFFFFF;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 4, 0, 0, 4);
+}
+
+.hb_container AnchorPane {
+    -fx-background-radius: 20;
+    -fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);
+    -fx-effect: dropshadow(three-pass-box, #D3D3D3, 4, 0, 0, 4);
+}
+
+.hb_container AnchorPane:hover {
+    -fx-cursor: hand;
+}
+
+.hb_container Label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 1.6em;
+    -fx-font-weight: bold;
+}
+
+.hb_container FontAwesomeIconView {
+    -fx-fill: #FFC14B;
+}
+
+.sum_num {
+    -fx-font-size: 1.8em;
+}
+
+/* bang danh sach phong */
+.test {
+    -fx-text-fill: #FFC14B;
+    -fx-font-size: 1.2em;
+    -fx-font-weight: 700;
+}
+
+/* table danh sach phong */
+.table-view .column-header {
+    -fx-background-color: #17EA9D;
+    -fx-border-width: 0 1 0 1;
+    -fx-border-color: #b1b1b1;
+}
+.table-view .column-header .label{
+    -fx-text-fill: #FFFFFF;
+}
+
+/* ban do */
+.map_container {
+    -fx-spacing: 10;
+    -fx-padding: 8;
+    -fx-background-radius: 20;
+    -fx-background-color: #FFFFFF;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 4, 0, 0, 4);
+}
+

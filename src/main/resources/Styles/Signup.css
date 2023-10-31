@@ -1,0 +1,59 @@
+/* vbox chua all */
+.anchorpane_container {
+    -fx-background-color: linear-gradient(to right, #17EA9D, #6078EA);
+   /* -fx-spacing: 15;*/
+}
+
+.anchorpane_container Text {
+    -fx-font-size: 2em;
+    -fx-font-weight: bold;
+    -fx-fill: #FFFFFF;
+    -fx-alignment: center;
+}
+
+/* vbox chua in4 login */
+.vb_container {
+    -fx-spacing: 3;
+}
+.vb_container Label {
+    -fx-font-size: 1.1em;
+    -fx-text-fill: #FFFFFF;
+}
+
+.vb_container TextField{
+    -fx-pref-height: 30;
+    -fx-pref-width: 200;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 3, 0, 0, 2);
+}
+
+.vb_container PasswordField{
+    -fx-pref-height: 30;
+    -fx-pref-width: 200;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 3, 0, 0, 2);
+}
+
+.vb_container ComboBox {
+    -fx-pref-height: 30;
+    -fx-pref-width: 200;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 3, 0, 0, 2);
+}
+
+.vb_container DatePicker {
+    -fx-pref-height: 30;
+    -fx-pref-width: 200;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 3, 0, 0, 2);
+}
+
+/* btn signin */
+Button {
+    -fx-background-color: #17EA9D;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+}
+
+
+Button:hover {
+    -fx-cursor: hand;
+}

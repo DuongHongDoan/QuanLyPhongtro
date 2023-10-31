@@ -1,0 +1,94 @@
+/* mã màu chuẩn của giao diện
+    #9FD7F9: màu xanh nước biển nhạt
+    #EEEEEE: màu hơi xám
+    #FFFFFF: màu trắng
+    #daa545: màu vàng hột gà
+*/
+
+
+/* anchorpane chua all */
+.anchorpane_container {
+    -fx-background-color: #EEEEEE;
+}
+
+/* vbox chua logo va ten */
+.vbox_left {
+    -fx-background-color: linear-gradient(to right, #17EA9D, #6078EA);
+    -fx-alignment: center;
+}
+
+/* vbox chua o nhap ten va mat khau */
+    /* choiceBox */
+#choice-box-popup-menu {
+    -fx-background-color: #9FD7F9;
+}
+
+.account_selector {
+    -fx-font-size: 1em;
+}
+
+.account_selector .label {
+    -fx-fill: #132A13;
+}
+
+.account_selector .arrow {
+    -fx-background-color: #132A13;
+}
+
+    /* label va textfield */
+
+.vbox_right {
+    -fx-spacing: 15;
+    -fx-alignment: top_left;
+}
+
+.vbox_right Label {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFC14B;
+}
+
+.vbox_right TextField {
+    -fx-background-color: #EEEEEE;
+    -fx-pref-height: 30;
+    -fx-pref-width: 150;
+    -fx-font-size: 1.2em;
+    -fx-border-width: 1;
+    -fx-border-color: #ccc8c8;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 3, 0, 0, 2);
+}
+
+.vbox_right PasswordField {
+    -fx-background-color: #EEEEEE;
+    -fx-pref-height: 30;
+    -fx-pref-width: 150;
+    -fx-font-size: 1.2em;
+    -fx-border-width: 1;
+    -fx-border-color: #ccc8c8;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 3, 0, 0, 2);
+}
+
+.vbox_right TextField:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-width: 0;
+}
+
+.vbox_right PasswordField:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-width: 0;
+}
+
+Button {
+    -fx-pref-width: 160;
+    -fx-pref-height: 30;
+    -fx-alignment: center;
+    -fx-background-color:  #6078EA;
+    -fx-text-fill: #FFC14B;
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(two-pass-box, #D3D3D3, 3, 0, 0, 2);
+}
+
+Button:hover {
+    -fx-cursor: hand;
+}
