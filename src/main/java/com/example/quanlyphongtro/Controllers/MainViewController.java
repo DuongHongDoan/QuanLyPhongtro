@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class MainViewController implements Initializable {
@@ -59,6 +60,16 @@ public class MainViewController implements Initializable {
 
     @FXML
     public Button btn_manage_room;
+    @FXML
+    public Button btn_manage_service;
+    @FXML
+    public Button btn_service_add;
+
+    @FXML
+    public Button btn_service_del;
+
+    @FXML
+    public Button btn_service_edit;
 
     @FXML
     public Button btn_profile;
@@ -68,6 +79,9 @@ public class MainViewController implements Initializable {
 
     @FXML
     public Button btn_update_room;
+
+    @FXML
+    public Button btn_edit_save;
 
     @FXML
     public AreaChart<?, ?> chart_income;
@@ -106,6 +120,12 @@ public class MainViewController implements Initializable {
     public TableColumn<?, ?> col_room_type;
 
     @FXML
+    public TableColumn<?, ?> col_service_name;
+
+    @FXML
+    public TableColumn<?, ?> col_service_price;
+
+    @FXML
     public ComboBox<String> combo_room_status;
 
     @FXML
@@ -136,10 +156,12 @@ public class MainViewController implements Initializable {
     public Label lbl_username_info;
 
     @FXML
-    public TableView<?> tbv_list_customer;
+    public TableView<InfoRendRoomData> tbv_list_customer;
 
     @FXML
     public TableView<roomData> tbv_list_room;
+    @FXML
+    public TableView<serviceData> tbv_service_list;
 
     @FXML
     public TextField tf_edit_cccd;
@@ -170,21 +192,81 @@ public class MainViewController implements Initializable {
 
     @FXML
     public TextField tf_search_render;
+    @FXML
+    public TextField tf_service_name;
+
+    @FXML
+    public TextField tf_service_price;
+    @FXML
+    public TextField tf_edit_username;
+    @FXML
+    public TextField tf_edit_gender;
+    @FXML
+    public TextField tf_edit_email;
+    @FXML
+    public TextField tf_edit_phone_user;
+
+    @FXML
+    public AnchorPane view_home;
+
+    @FXML
+    public AnchorPane view_manage_render;
+
+    @FXML
+    public AnchorPane view_manage_room;
+
+    @FXML
+    public AnchorPane view_manage_service;
+
+    @FXML
+    public AnchorPane view_profile;
+
+    @FXML
+    public AnchorPane view_edit_profile;
 
     ObservableList<roomTypeData> roomTypeList;
     ObservableList<roomData> roomDataLists;
+    static ObservableList<InfoRendRoomData> renderList;
+    ObservableList<serviceData> serviceDataList;
+
+    public static void reloadRenderList() throws SQLException {
+        renderList = DatabaseDriver.getRenderList();
+    }
 
     // Tạo đối tượng `DecimalFormat`
     DecimalFormat decimalFormat = new DecimalFormat();
 
     //ham gan thong tin ca nhan cua chu nha tro
-    public void setUserLabel(String username) {
+    public void setUserLabel(String username, String gender, String email, String phone) {
         lbl_username.setText(username);
+        lbl_username_info.setText(username);
+        lbl_gender.setText(gender);
+        lbl_email.setText(email);
+        lbl_phone.setText(phone);
+
+        tf_edit_username.setText(username);
+        tf_edit_gender.setText(gender);
+        tf_edit_email.setText(email);
+        tf_edit_phone_user.setText(phone);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //gan du lieu lay tu db ra comboBox de chon
+        //su kien chuyen view
+        btn_home.setOnAction(this::switchView);
+        btn_manage_room.setOnAction(this::switchView);
+        btn_manage_renter.setOnAction(this::switchView);
+        btn_manage_service.setOnAction(this::switchView);
+        btn_profile.setOnAction(this::switchView);
+        btn_edit_info.setOnAction(this::switchView);
+
+//hien thi so luong thong ke
+        //thong ke so phong da duoc thue
+        showTotalRendRoom();
+
+        //thong ke so nguoi thue
+        showTotalRender();
+//gan du lieu lay tu db ra comboBox de chon
         //comboBox loai phong
         try {
             comboBox_roomType();
@@ -196,14 +278,14 @@ public class MainViewController implements Initializable {
         combo_room_status.getItems().addAll("Phòng trống", "Đã thuê", "Bảo trì");
         combo_room_status.getSelectionModel().selectFirst();
 
-        //cac nut them, sua, clear, xoa tai Quan ly phong
+//cac nut them, sua, clear, xoa tai Quan ly phong
         //nut them
         btn_add_room.setOnAction(this::addRoom);
         //nut sua
         btn_update_room.setOnAction(this::updateRoom);
         //nut xoa
         btn_delete_room.setOnAction(this::delRoom);
-        //hai nut them, sua tai o Them Loai Phong
+//hai nut them, sua tai o Them Loai Phong
         //nut them loai phong
         btn_add_room_type.setOnAction(this::addRoomType);
         //nut sua gia loai phong
@@ -214,25 +296,286 @@ public class MainViewController implements Initializable {
         //nut checkIn phong
         btn_rent.setOnAction(e -> Model.getInstance().getViewFactory().showCheckInWindow());
 
+        //nut sua, xoa khach thue
+        btn_edit.setOnAction(this::editInfo);
+        btn_del.setOnAction(this::delInfo);
+
+//cac nut o view quan ly dich vu
+        //nut them, sua xoa
+        btn_service_add.setOnAction(this::addService);
+        btn_service_edit.setOnAction(this::editService);
+        btn_service_del.setOnAction(this::delService);
+
+        //nut hoan tat khi sua thong tin nguoi dung xong va nut xoa tai khoan
+        btn_edit_save.setOnAction(this::saveEdit);
+        btn_del_info.setOnAction(this::delUser);
+
         //hien thi du lieu phong len tableView
         try {
             showRoomList();
+            showRenderList();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        showServiceList();
 
         //bam vao tung dong trong tableView, hien du lieu ra các o tai Quan ly phong
-        tbv_list_room.setOnMouseClicked(e -> clickItem());
+        tbv_list_room.setOnMouseClicked(e -> clickItemRoom());
+        tbv_list_customer.setOnMouseClicked(e -> clickItemRender());
+        tbv_service_list.setOnMouseClicked(e -> clickItemService());
 
         //o tim kiem
-        onSearch();
+        onSearchRoom();
+        onSearchRender();
 
         //nut dang xuat
         btn_logout.setOnAction(e -> onMoveLogin());
     }
 
+    private void delService(ActionEvent event) {
+        if(tf_service_name.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Thông báo");
+            alert.setContentText("Vui lòng không để trống tên dịch vụ!");
+            alert.show();
+        }else {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Thông báo");
+            alert.setContentText("Bạn có chắc muốn xóa dịch vụ?");
+            Optional<ButtonType> optional = alert.showAndWait();
+
+            if(optional.isPresent() && optional.get().equals(ButtonType.OK)) {
+                DatabaseDriver.delService(event, tf_service_name.getText());
+                showServiceList();
+                clearService();
+            }
+        }
+    }
+
+
+    private void editService(ActionEvent event) {
+        if(tf_service_name.getText().isEmpty() || tf_service_price.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Thông báo");
+            alert.setContentText("Vui lòng không để trống!");
+            alert.show();
+        }else {
+            DatabaseDriver.editService(event, tf_service_name.getText(), Double.valueOf(tf_service_price.getText()));
+            showServiceList();
+            clearService();
+        }
+    }
+
+    private void addService(ActionEvent event) {
+        if(tf_service_name.getText().isEmpty() || tf_service_price.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Thông báo");
+            alert.setContentText("Vui lòng không để trống!");
+            alert.show();
+        }else {
+            DatabaseDriver.addService(event, tf_service_name.getText(), Double.valueOf(tf_service_price.getText()));
+            showServiceList();
+            clearService();
+        }
+    }
+
+    private void showTotalRender() {
+        int cnt_render;
+        try {
+            cnt_render = DatabaseDriver.getTotalRender();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        lbl_sum_renter.setText(String.valueOf(cnt_render));
+    }
+
+    private void showTotalRendRoom() {
+        String cnt_rend_room;
+        try {
+            cnt_rend_room = DatabaseDriver.getTotalRendRoom();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        lbl_sum_room.setText(String.valueOf(cnt_rend_room));
+    }
+
+    private void delUser(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Thông báo");
+        alert.setContentText("Bạn có chắc muốn xóa tài khoản?");
+        Optional<ButtonType> optional = alert.showAndWait();
+
+        if(optional.isPresent() && optional.get().equals(ButtonType.OK)) {
+            DatabaseDriver.delUser(event, lbl_username_info.getText());
+            Stage stage = (Stage) btn_profile.getScene().getWindow();
+            Model.getInstance().getViewFactory().closeStage(stage);
+            Model.getInstance().getViewFactory().showLoginWindow();
+        }
+    }
+
+    private void saveEdit(ActionEvent event) {
+        if (tf_edit_username.getText().isEmpty() || tf_edit_gender.getText().isEmpty() || tf_edit_email.getText().isEmpty() || tf_edit_phone_user.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Thông báo");
+            alert.setContentText("Vui lòng không để trống!");
+            alert.show();
+        }
+        else {
+            try {
+                if(!checkPhone(tf_edit_phone_user.getText())) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Thông báo");
+                    alert.setContentText("Số điện thoại không đúng định dạng!");
+                    alert.show();
+                }
+                else if (!checkEmail(tf_edit_email.getText())){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Thông báo");
+                    alert.setContentText("Email không đúng định dạng!");
+                    alert.show();
+                }else {
+                    String oldName = lbl_username.getText();
+                    DatabaseDriver.updateUserInfo(event, oldName, tf_edit_username.getText(), tf_edit_gender.getText(), tf_edit_email.getText(), tf_edit_phone_user.getText());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     //cac ham chuc nang
+    //chuyen doi cac view qua lai
+    public void switchView(ActionEvent event) {
+        if(event.getSource() == btn_home) {
+            view_home.setVisible(true);
+            view_manage_room.setVisible(false);
+            view_manage_render.setVisible(false);
+            view_manage_service.setVisible(false);
+            view_profile.setVisible(false);
+            view_edit_profile.setVisible(false);
+
+            //thong ke so phong da duoc thue
+            showTotalRendRoom();
+
+            //thong ke so nguoi thue
+            showTotalRender();
+
+            btn_home.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
+                    "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
+            btn_manage_room.setStyle("-fx-background-color: transparent;");
+            btn_manage_renter.setStyle("-fx-background-color: transparent;");
+            btn_manage_service.setStyle("-fx-background-color: transparent;");
+            btn_profile.setStyle("-fx-background-color: transparent;");
+            btn_logout.setStyle("-fx-background-color: transparent;");
+        }
+        else if(event.getSource() == btn_manage_room) {
+            view_home.setVisible(false);
+            view_manage_room.setVisible(true);
+            view_manage_render.setVisible(false);
+            view_manage_service.setVisible(false);
+            view_profile.setVisible(false);
+            view_edit_profile.setVisible(false);
+
+            try {
+                showRoomList();
+                onSearchRoom();
+            }catch(SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
+            btn_home.setStyle("-fx-background-color: transparent;");
+            btn_manage_room.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
+                    "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
+            btn_manage_renter.setStyle("-fx-background-color: transparent;");
+            btn_manage_service.setStyle("-fx-background-color: transparent;");
+            btn_profile.setStyle("-fx-background-color: transparent;");
+            btn_logout.setStyle("-fx-background-color: transparent;");
+        }
+        else if(event.getSource() == btn_manage_renter) {
+            view_home.setVisible(false);
+            view_manage_room.setVisible(false);
+            view_manage_render.setVisible(true);
+            view_manage_service.setVisible(false);
+            view_profile.setVisible(false);
+            view_edit_profile.setVisible(false);
+
+            try {
+                showRenderList();
+                onSearchRender();
+            }catch(SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
+            btn_home.setStyle("-fx-background-color: transparent;");
+            btn_manage_room.setStyle("-fx-background-color: transparent;");
+            btn_manage_renter.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
+                    "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
+            btn_manage_service.setStyle("-fx-background-color: transparent;");
+            btn_profile.setStyle("-fx-background-color: transparent;");
+            btn_logout.setStyle("-fx-background-color: transparent;");
+        }
+        else if(event.getSource() == btn_manage_service) {
+            view_home.setVisible(false);
+            view_manage_room.setVisible(false);
+            view_manage_render.setVisible(false);
+            view_profile.setVisible(false);
+            view_edit_profile.setVisible(false);
+            view_manage_service.setVisible(true);
+
+            showServiceList();
+            clearService();
+
+            btn_home.setStyle("-fx-background-color: transparent;");
+            btn_manage_room.setStyle("-fx-background-color: transparent;");
+            btn_manage_renter.setStyle("-fx-background-color: transparent;");
+            btn_manage_service.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
+                    "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
+            btn_profile.setStyle("-fx-background-color: transparent;");
+            btn_logout.setStyle("-fx-background-color: transparent;");
+        }
+        else if(event.getSource() == btn_profile) {
+            view_home.setVisible(false);
+            view_manage_room.setVisible(false);
+            view_manage_render.setVisible(false);
+            view_profile.setVisible(true);
+            view_edit_profile.setVisible(false);
+            view_manage_service.setVisible(false);
+
+            btn_home.setStyle("-fx-background-color: transparent;");
+            btn_manage_room.setStyle("-fx-background-color: transparent;");
+            btn_manage_renter.setStyle("-fx-background-color: transparent;");
+            btn_manage_service.setStyle("-fx-background-color: transparent;");
+            btn_profile.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
+                    "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
+            btn_logout.setStyle("-fx-background-color: transparent;");
+        }
+        else if(event.getSource() == btn_edit_info) {
+            view_home.setVisible(false);
+            view_manage_room.setVisible(false);
+            view_manage_render.setVisible(false);
+            view_manage_service.setVisible(false);
+            view_profile.setVisible(false);
+            view_edit_profile.setVisible(true);
+
+            btn_home.setStyle("-fx-background-color: transparent;");
+            btn_manage_room.setStyle("-fx-background-color: transparent;");
+            btn_manage_renter.setStyle("-fx-background-color: transparent;");
+            btn_manage_service.setStyle("-fx-background-color: transparent;");
+            btn_profile.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
+                    "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
+            btn_logout.setStyle("-fx-background-color: transparent;");
+        }
+        else if(event.getSource() == btn_logout) {
+            btn_home.setStyle("-fx-background-color: transparent;");
+            btn_manage_room.setStyle("-fx-background-color: transparent;");
+            btn_manage_renter.setStyle("-fx-background-color: transparent;");
+            btn_manage_service.setStyle("-fx-background-color: transparent;");
+            btn_profile.setStyle("-fx-background-color: transparent;");
+            btn_logout.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
+                    "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
+        }
+    }
+
     private void addRoom(ActionEvent event) {
         if(tf_room_name.getText().isEmpty() || tf_room_price.getText().isEmpty() || combo_room_type.getSelectionModel().isEmpty()
                 || combo_room_status.getSelectionModel().isEmpty()) {
@@ -249,8 +592,8 @@ public class MainViewController implements Initializable {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            clear();
-            onSearch();
+            clearRoom();
+            onSearchRoom();
         }
     }
 
@@ -270,8 +613,8 @@ public class MainViewController implements Initializable {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            clear();
-            onSearch();
+            clearRoom();
+            onSearchRoom();
         }
     }
 
@@ -293,11 +636,11 @@ public class MainViewController implements Initializable {
             }
             try {
                 showRoomList();
-                clear();
+                clearRoom();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            onSearch();
+            onSearchRoom();
         }
     }
 
@@ -322,8 +665,8 @@ public class MainViewController implements Initializable {
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-                clear();
-                onSearch();
+                clearRoom();
+                onSearchRoom();
             }
         }
     }
@@ -349,8 +692,8 @@ public class MainViewController implements Initializable {
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-                clear();
-                onSearch();
+                clearRoom();
+                onSearchRoom();
             }
         }
     }
@@ -374,11 +717,60 @@ public class MainViewController implements Initializable {
             try {
                 comboBox_roomType();
                 showRoomList();
-                clear();
+                clearRoom();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            onSearch();
+            onSearchRoom();
+        }
+    }
+
+    private void delInfo(ActionEvent event) {
+        if(tf_edit_name.getText().isEmpty() || tf_edit_cccd.getText().isEmpty() || tf_edit_homeTown.getText().isEmpty() ||
+                tf_edit_phone.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Thông báo");
+            alert.setContentText("Vui lòng không để trống!");
+            alert.show();
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Thông báo");
+            alert.setContentText("Bạn có chắc muốn xóa khách " + tf_edit_name.getText() + "?");
+            Optional<ButtonType> option = alert.showAndWait();
+
+            if(option.isPresent() && option.get().equals(ButtonType.OK)) {
+                DatabaseDriver.delInfo(event, tf_edit_name.getText(), tf_edit_cccd.getText(), tf_edit_homeTown.getText(), tf_edit_phone.getText());
+            }
+            try {
+                showRenderList();
+            }catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            clearRender();
+            onSearchRender();
+        }
+    }
+
+    private void editInfo(ActionEvent event) {
+        if(tf_edit_name.getText().isEmpty() || tf_edit_cccd.getText().isEmpty() || tf_edit_homeTown.getText().isEmpty() ||
+                tf_edit_phone.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Thông báo");
+            alert.setContentText("Vui lòng không để trống!");
+            alert.show();
+        }
+        else {
+            int i = tbv_list_customer.getSelectionModel().getSelectedIndex();
+            String oldName = tbv_list_customer.getItems().get(i).getFullname();
+            DatabaseDriver.editInfo(event, oldName, tf_edit_name.getText(), tf_edit_cccd.getText(), tf_edit_homeTown.getText(), tf_edit_phone.getText());
+            try {
+                showRenderList();
+            }catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            clearRender();
+            onSearchRender();
         }
     }
 
@@ -395,7 +787,7 @@ public class MainViewController implements Initializable {
         });
     }
 
-    private void clickItem() {
+    private void clickItemRoom() {
         roomData roomRow = tbv_list_room.getSelectionModel().getSelectedItem();
         int num = tbv_list_room.getSelectionModel().getSelectedIndex();
 
@@ -405,6 +797,32 @@ public class MainViewController implements Initializable {
         }
 
         tf_room_name.setText(roomRow.getRoomName());
+    }
+
+    private void clickItemRender() {
+        InfoRendRoomData infoRow = tbv_list_customer.getSelectionModel().getSelectedItem();
+        int n = tbv_list_customer.getSelectionModel().getSelectedIndex();
+
+        if((n-1) < -1) {
+            return;
+        }
+
+        tf_edit_name.setText(infoRow.getFullname());
+        tf_edit_cccd.setText(infoRow.getCCCD());
+        tf_edit_homeTown.setText(infoRow.getHomeTown());
+        tf_edit_phone.setText(infoRow.getPhone());
+    }
+
+    private void clickItemService() {
+        serviceData serRow = tbv_service_list.getSelectionModel().getSelectedItem();
+        int n = tbv_service_list.getSelectionModel().getSelectedIndex();
+
+        if((n-1) < -1) {
+            return;
+        }
+
+        tf_service_name.setText(serRow.getServiceName());
+        tf_service_price.setText(String.valueOf(serRow.getServicePrice()));
     }
 
     public void showRoomList() throws SQLException {
@@ -417,7 +835,30 @@ public class MainViewController implements Initializable {
         tbv_list_room.setItems(roomDataLists);
     }
 
-    private void clear() {
+    public void showRenderList() throws SQLException {
+        renderList = DatabaseDriver.getRenderList();
+
+        col_fullname.setCellValueFactory(new PropertyValueFactory<>("fullname"));
+        col_cccd.setCellValueFactory(new PropertyValueFactory<>("CCCD"));
+        col_gender.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        col_addr.setCellValueFactory(new PropertyValueFactory<>("homeTown"));
+        col_phone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        col_rent_date.setCellValueFactory(new PropertyValueFactory<>("rendDate"));
+        col_room_name_render.setCellValueFactory(new PropertyValueFactory<>("roomName"));
+
+        tbv_list_customer.setItems(renderList);
+    }
+
+    private void showServiceList() {
+        serviceDataList = DatabaseDriver.getServiceList();
+
+        col_service_name.setCellValueFactory(new PropertyValueFactory<>("serviceName"));
+        col_service_price.setCellValueFactory(new PropertyValueFactory<>("servicePrice"));
+
+        tbv_service_list.setItems(serviceDataList);
+    }
+
+    private void clearRoom() {
         tf_room_name.setText("");
         combo_room_type.getSelectionModel().selectFirst();
         combo_room_status.getSelectionModel().selectFirst();
@@ -426,7 +867,20 @@ public class MainViewController implements Initializable {
         tf_roomPrice.setText("");
     }
 
-    private void onSearch() {
+
+    private void clearRender() {
+        tf_edit_name.setText("");
+        tf_edit_cccd.setText("");
+        tf_edit_homeTown.setText("");
+        tf_edit_phone.setText("");
+    }
+
+    private void clearService() {
+        tf_service_name.setText("");
+        tf_service_price.setText("");
+    }
+
+    private void onSearchRoom() {
         FilteredList<roomData> filter = new FilteredList<>(roomDataLists, e-> true);
 
         tf_search.textProperty().addListener((Observable, oldValue, newValue) ->{
@@ -457,6 +911,43 @@ public class MainViewController implements Initializable {
         tbv_list_room.setItems(sortList);
     }
 
+    private void onSearchRender() {
+        FilteredList<InfoRendRoomData> filter = new FilteredList<>(renderList, e-> true);
+
+        tf_search_render.textProperty().addListener((Observable, oldValue, newValue) ->{
+
+            filter.setPredicate(predicateMedicineData ->{
+
+                if(newValue == null || newValue.isEmpty()){
+                    return true;
+                }
+
+                String searchKey = newValue.toLowerCase();
+
+                if(predicateMedicineData.getFullname().toLowerCase().contains(searchKey)){
+                    return true;
+                }else if(predicateMedicineData.getCCCD().toLowerCase().contains(searchKey)){
+                    return true;
+                }else if(predicateMedicineData.getGender().toLowerCase().contains(searchKey)){
+                    return true;
+                }else if(predicateMedicineData.getHomeTown().toLowerCase().contains(searchKey)){
+                    return true;
+                }else if(predicateMedicineData.getPhone().toLowerCase().contains(searchKey)){
+                    return true;
+                }else if(predicateMedicineData.getRendDate().toString().contains(searchKey)){
+                    return true;
+                }else if(predicateMedicineData.getRoomName().toLowerCase().contains(searchKey)){
+                    return true;
+                }else return false;
+            });
+        });
+
+        SortedList<InfoRendRoomData> sortList = new SortedList<>(filter);
+
+        sortList.comparatorProperty().bind(tbv_list_customer.comparatorProperty());
+        tbv_list_customer.setItems(sortList);
+    }
+
     //click dang xuat
     private void onMoveLogin() {
         btn_logout.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
@@ -477,5 +968,24 @@ public class MainViewController implements Initializable {
             Model.getInstance().getViewFactory().showLoginWindow();
         }
         else return;
+    }
+
+    private boolean checkPhone(String str) throws Exception {
+        // Bieu thuc chinh quy mo ta dinh dang so dien thoai
+        String reg = "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$";
+
+        // Kiem tra dinh dang
+        boolean kt = str.matches(reg);
+
+        return kt;
+    }
+
+    //kiem tra email
+    private boolean checkEmail (String str) throws Exception {
+        //bieu thuc chinh quy dinh dang 1 email
+        String reg = "^[A-Za-z0-9]+[A-Za-z0-9]*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)$";
+
+        boolean kt = str.matches(reg);
+        return kt;
     }
 }

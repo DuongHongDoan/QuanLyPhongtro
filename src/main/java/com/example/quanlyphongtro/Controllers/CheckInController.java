@@ -106,6 +106,7 @@ public class CheckInController implements Initializable {
                     DatabaseDriver.checkIn(event, tf_render_name.getText(), cb_gender.getValue(), tf_cccd.getText(),
                             tf_phone.getText(), tf_home_town.getText(), roomName,
                             Double.valueOf(tf_deposit.getText()), Date.valueOf(dp_rend_date.getValue()));
+                    MainViewController.reloadRenderList();
                 }
             }catch (Exception e) {
                 System.out.println(e.getMessage());

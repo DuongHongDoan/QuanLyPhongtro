@@ -64,6 +64,11 @@
                                                  <FontAwesomeIconView glyphName="GROUP" size="30" />
                                              </graphic>
                                          </Button>
+                                    <Button fx:id="btn_manage_service" layoutX="15.0" layoutY="146.0" mnemonicParsing="false" prefWidth="321.0" text="Quản lý dịch vụ và hóa đơn" wrapText="true">
+                                       <graphic>
+                                          <FontAwesomeIconView glyphName="COG" size="30" />
+                                       </graphic>
+                                    </Button>
                                      </children>
                                  </VBox>
                                  <Pane prefHeight="130.0" prefWidth="126.0" />
@@ -90,7 +95,7 @@
                      <center>
                          <AnchorPane prefHeight="686.0" prefWidth="880.0" styleClass="anchor_child" stylesheets="@../Styles/HomeView.css">
                              <children>
-                                 <AnchorPane layoutX="124.0" layoutY="140.0" prefHeight="740.0" prefWidth="880.0" styleClass="anchor_child" visible="false" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <AnchorPane fx:id="view_home" layoutX="124.0" layoutY="140.0" prefHeight="740.0" prefWidth="880.0" styleClass="anchor_child" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                      <children>
                                          <HBox layoutX="14.0" layoutY="14.0" prefHeight="230.0" prefWidth="930.0" styleClass="hb_container" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                                              <children>
@@ -140,7 +145,7 @@
                                          </AnchorPane>
                                      </children>
                                  </AnchorPane>
-                                 <AnchorPane layoutX="131.0" layoutY="113.0" prefHeight="740.0" prefWidth="880.0" styleClass="anchor_child" stylesheets="@../Styles/ManageRoomView.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <AnchorPane fx:id="view_manage_room" layoutX="131.0" layoutY="113.0" prefHeight="740.0" prefWidth="880.0" styleClass="anchor_child" stylesheets="@../Styles/ManageRoomView.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                      <children>
                                          <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="300.0" styleClass="frame" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
                                              <children>
@@ -247,7 +252,7 @@
                                          </AnchorPane>
                                      </children>
                                  </AnchorPane>
-                                 <AnchorPane layoutX="82.0" layoutY="83.0" prefHeight="740.0" prefWidth="880.0" styleClass="anchor_child" stylesheets="@../Styles/ManageRoomView.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <AnchorPane fx:id="view_manage_render" layoutX="82.0" layoutY="83.0" prefHeight="740.0" prefWidth="880.0" styleClass="anchor_child" stylesheets="@../Styles/ManageRoomView.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                      <children>
                                          <AnchorPane layoutX="155.0" layoutY="158.0" prefHeight="537.0" prefWidth="851.0" styleClass="frame" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                                              <children>
@@ -255,13 +260,13 @@
                                                  <FontAwesomeIconView fill="#6078ea" glyphName="SEARCH" layoutX="24.0" layoutY="36.0" size="20" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="11.0" />
                                                  <TableView fx:id="tbv_list_customer" layoutX="16.0" layoutY="70.0" prefHeight="409.0" prefWidth="924.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                                                      <columns>
-                                                         <TableColumn fx:id="col_fullname" prefWidth="178.39999675750732" text="Họ và tên" />
-                                                         <TableColumn fx:id="col_cccd" prefWidth="134.40000915527344" text="CCCD" />
-                                                         <TableColumn fx:id="col_gender" prefWidth="70.39996337890625" text="Giới tính" />
-                                                         <TableColumn fx:id="col_addr" prefWidth="160.79998779296875" text="Quê quán" />
-                                                         <TableColumn fx:id="col_phone" prefWidth="132.0" text="Số điện thoại" />
-                                                         <TableColumn fx:id="col_rent_date" prefWidth="120.7999267578125" text="Ngày thuê" />
-                                                         <TableColumn fx:id="col_room_name_render" prefWidth="124.800048828125" text="Tên phòng" />
+                                                         <TableColumn fx:id="col_fullname" prefWidth="156.79996299743652" text="Họ và tên" />
+                                                         <TableColumn fx:id="col_cccd" prefWidth="115.19998168945312" text="CCCD" />
+                                                         <TableColumn fx:id="col_gender" prefWidth="74.4000244140625" text="Giới tính" />
+                                                         <TableColumn fx:id="col_addr" prefWidth="139.99993896484375" text="Quê quán" />
+                                                         <TableColumn fx:id="col_phone" prefWidth="114.39999389648438" text="Số điện thoại" />
+                                                         <TableColumn fx:id="col_rent_date" prefWidth="109.60003662109375" text="Ngày thuê" />
+                                                         <TableColumn fx:id="col_room_name_render" prefWidth="124.0" text="Tên phòng" />
                                                      </columns>
                                                  </TableView>
                                              </children>
@@ -304,13 +309,52 @@
                                                          </TextField>
                                                      </children>
                                                  </HBox>
-                                                 <Button fx:id="btn_edit" layoutX="322.0" layoutY="125.0" mnemonicParsing="false" style="-fx-background-color: yellow;" styleClass="hover" text="Sửa" />
-                                                 <Button fx:id="btn_del" layoutX="437.0" layoutY="125.0" mnemonicParsing="false" style="-fx-background-color: red;" styleClass="hover" text="Xóa" />
+                                                 <Button fx:id="btn_edit" layoutX="448.0" layoutY="125.0" mnemonicParsing="false" style="-fx-background-color: yellow;" styleClass="hover" text="Sửa" />
+                                                 <Button fx:id="btn_del" layoutX="323.0" layoutY="125.0" mnemonicParsing="false" style="-fx-background-color: red;" styleClass="hover" text="Xóa" />
                                              </children>
                                          </AnchorPane>
                                      </children>
                                  </AnchorPane>
-                                 <AnchorPane layoutX="64.0" layoutY="63.0" prefHeight="740.0" prefWidth="880.0" styleClass="anchor_child" stylesheets="@../Styles/ProfileView.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <AnchorPane fx:id="view_manage_service" layoutX="10.0" layoutY="10.0" prefHeight="750.4" prefWidth="890.4" styleClass="anchor_child" stylesheets="@../Styles/ManageRoomView.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <AnchorPane layoutX="155.0" layoutY="158.0" prefHeight="440.0" prefWidth="440.0" styleClass="frame" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
+                                       <children>
+                                          <Text layoutX="141.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Quản lý dịch vụ" AnchorPane.leftAnchor="140.0" AnchorPane.topAnchor="14.0" />
+                                          <TableView fx:id="tbv_service_list" layoutX="20.0" layoutY="57.0" prefHeight="366.0" prefWidth="399.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+                                            <columns>
+                                              <TableColumn fx:id="col_service_name" prefWidth="209.60004234313965" text="Tên dịch vụ" />
+                                              <TableColumn fx:id="col_service_price" prefWidth="209.5999755859375" text="Giá" />
+                                            </columns>
+                                          </TableView>
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane layoutX="14.0" layoutY="554.0" prefHeight="260.0" prefWidth="440.0" styleClass="frame" stylesheets="@../Styles/ManageRoomView.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="5.0">
+                                       <children>
+                                          <HBox layoutX="24.0" layoutY="62.0" prefHeight="38.0" prefWidth="250.0" styleClass="hb_field" AnchorPane.leftAnchor="70.0">
+                                             <children>
+                                                <Label text="Tên dịch vụ:" />
+                                                <TextField fx:id="tf_service_name" prefHeight="32.0" prefWidth="150.0" />
+                                             </children>
+                                          </HBox>
+                                          <HBox layoutX="24.0" layoutY="108.0" prefHeight="38.0" prefWidth="250.0" styleClass="hb_field" AnchorPane.leftAnchor="70.0">
+                                             <children>
+                                                <Label text="Giá:" />
+                                                <TextField fx:id="tf_service_price" prefHeight="32.0" prefWidth="150.0">
+                                                   <HBox.margin>
+                                                      <Insets left="52.0" />
+                                                   </HBox.margin>
+                                                </TextField>
+                                             </children>
+                                          </HBox>
+                                          <Text layoutX="139.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Thêm dịch vụ" AnchorPane.leftAnchor="140.0" AnchorPane.topAnchor="14.0" />
+                                          <Button fx:id="btn_service_del" layoutX="47.0" layoutY="181.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="43.0" style="-fx-background-color: red;" text="Xóa" AnchorPane.bottomAnchor="40.0" />
+                                          <Button fx:id="btn_service_add" layoutX="162.0" layoutY="181.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="43.0" style="-fx-background-color: #00ff2b;" text="Thêm" AnchorPane.bottomAnchor="40.0" />
+                                          <Button fx:id="btn_service_edit" layoutX="278.0" layoutY="181.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="43.0" style="-fx-background-color: yellow;" text="Sửa" AnchorPane.bottomAnchor="40.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </AnchorPane>
+                                 <AnchorPane fx:id="view_profile" layoutX="64.0" layoutY="63.0" prefHeight="740.0" prefWidth="880.0" styleClass="anchor_child" stylesheets="@../Styles/ProfileView.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                      <children>
                                          <AnchorPane layoutX="100.0" layoutY="51.0" prefHeight="680.0" prefWidth="930.0" styleClass="frame" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                                              <children>
@@ -359,12 +403,12 @@
                                                          </HBox>
                                                      </children>
                                                  </AnchorPane>
-                                                 <Button fx:id="btn_edit_info" layoutX="268.0" layoutY="400.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="170.0" text="Chỉnh sửa" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="440.0">
+                                                 <Button fx:id="btn_edit_info" layoutX="256.0" layoutY="390.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="143.0" text="Chỉnh sửa" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="450.0">
                                                      <graphic>
                                                          <FontAwesomeIconView glyphName="PENCIL" size="20" />
                                                      </graphic>
                                                  </Button>
-                                                 <Button fx:id="btn_del_info" layoutX="441.0" layoutY="400.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="170.0" text="Xóa tài khoản" AnchorPane.leftAnchor="440.0" AnchorPane.rightAnchor="250.0">
+                                                 <Button fx:id="btn_del_info" layoutX="443.0" layoutY="390.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="168.0" text="Xóa tài khoản" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="240.0">
                                                      <graphic>
                                                          <FontAwesomeIconView glyphName="TRASH" size="20" />
                                                      </graphic>
@@ -373,6 +417,64 @@
                                          </AnchorPane>
                                      </children>
                                  </AnchorPane>
+                              <AnchorPane fx:id="view_edit_profile" prefHeight="740.0" prefWidth="880.0" styleClass="anchor_child" stylesheets="@../Styles/ProfileView.css" visible="false">
+                                 <children>
+                                    <AnchorPane layoutX="100.0" layoutY="51.0" prefHeight="680.0" prefWidth="930.0" styleClass="frame" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                                       <children>
+                                          <Text layoutX="292.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Chỉnh sửa thông tin cá nhân" AnchorPane.leftAnchor="290.0" AnchorPane.rightAnchor="250.0" />
+                                          <AnchorPane layoutX="251.0" layoutY="71.0" prefHeight="300.0" prefWidth="500.0" styleClass="user_info" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0">
+                                             <children>
+                                                <HBox layoutX="56.0" layoutY="14.0" prefHeight="50.0" prefWidth="386.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+                                                   <children>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tên người dùng:" />
+                                                      <TextField fx:id="tf_edit_username" prefHeight="35.0" prefWidth="220.0">
+                                                         <HBox.margin>
+                                                            <Insets left="10.0" />
+                                                         </HBox.margin>
+                                                      </TextField>
+                                                   </children>
+                                                </HBox>
+                                                <HBox layoutX="56.0" layoutY="77.0" prefHeight="50.0" prefWidth="386.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+                                                   <children>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Giới tính:" />
+                                                      <TextField fx:id="tf_edit_gender" prefHeight="35.0" prefWidth="220.0">
+                                                         <HBox.margin>
+                                                            <Insets left="60.0" />
+                                                         </HBox.margin>
+                                                      </TextField>
+                                                   </children>
+                                                </HBox>
+                                                <HBox layoutX="50.0" layoutY="139.0" prefHeight="50.0" prefWidth="386.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+                                                   <children>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" />
+                                                      <TextField fx:id="tf_edit_email" prefHeight="35.0" prefWidth="220.0">
+                                                         <HBox.margin>
+                                                            <Insets left="80.0" />
+                                                         </HBox.margin>
+                                                      </TextField>
+                                                   </children>
+                                                </HBox>
+                                                <HBox layoutX="56.0" layoutY="200.0" prefHeight="50.0" prefWidth="386.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+                                                   <children>
+                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Số điện thoại:" />
+                                                      <TextField fx:id="tf_edit_phone_user" prefHeight="35.0" prefWidth="220.0">
+                                                         <HBox.margin>
+                                                            <Insets left="30.0" />
+                                                         </HBox.margin>
+                                                      </TextField>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </AnchorPane>
+                                          <Button fx:id="btn_edit_save" layoutX="359.0" layoutY="388.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="143.0" text="Hoàn tất" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0">
+                                             <graphic>
+                                                <FontAwesomeIconView glyphName="CHECK" size="20" />
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </AnchorPane>
                              </children>
                            <BorderPane.margin>
                               <Insets bottom="8.0" left="5.0" right="5.0" />

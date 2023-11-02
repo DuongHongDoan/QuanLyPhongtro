@@ -25,16 +25,13 @@ public class DatabaseDriver {
                 FXMLLoader loader = new FXMLLoader(DatabaseDriver.class.getResource(fxmlFile));
                 root = loader.load();
                 MainViewController mainViewController = loader.getController();
-                mainViewController.setUserLabel(username);
-//                managerController.btn_home.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
-//                        "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
-//                managerController.btn_profile.setStyle("-fx-background-color: transparent;");
-//                managerController.btn_manage_renter.setStyle("-fx-background-color: transparent;");
-//                managerController.btn_manage_room.setStyle("-fx-background-color: transparent;");
-//                managerController.btn_logout.setStyle("-fx-background-color: transparent;");
-
-//                ProfileController profileController = loader.getController();
-//                profileController.setInfoUser(username, gender, email, phone);
+                mainViewController.setUserLabel(username, gender, email, phone);
+                mainViewController.btn_home.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
+                        "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
+                mainViewController.btn_profile.setStyle("-fx-background-color: transparent;");
+                mainViewController.btn_manage_renter.setStyle("-fx-background-color: transparent;");
+                mainViewController.btn_manage_room.setStyle("-fx-background-color: transparent;");
+                mainViewController.btn_logout.setStyle("-fx-background-color: transparent;");
             }catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -213,52 +210,40 @@ public class DatabaseDriver {
         PreparedStatement psInsert = null;
         ResultSet resultSet = null;
 
-        String url = "jdbc:mysql://localhost/nienluancoso";
-        String user = "root";
-        String passwd_db = "";
-
         try {
             //ket noi database
-            conn = DriverManager.getConnection(url, user, passwd_db);
-            System.out.println("Kết nối database thành công......");
+            conn = ConnectDB.connectDB();
+            assert conn != null;
             //chuan bi cau lenh truy van SQL
             psCheckUserExist = conn.prepareStatement("SELECT * FROM tbl_accounts WHERE username = ?");
             psCheckUserExist.setString(1, old_user);
             //dua dl da truy van vao bo kq ResultSet
             resultSet = psCheckUserExist.executeQuery();
 
-            if(username.isEmpty() || phone.isEmpty() || email.isEmpty() || gender.isEmpty()){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Thông báo");
-                alert.setContentText("Vui lòng điền thông tin!");
-                alert.show();
-            }
-            else {
-                while (resultSet.next()) {//lap qua all du lieu co trong tap du lieu da tim thay
-                    String rt_username = resultSet.getString("username");
-                    String rt_gender = resultSet.getString("gender");
-                    String rt_phone = resultSet.getString("phone");
-                    String rt_email = resultSet.getString("email");
-                    if(username.equals(rt_username) && phone.equals(rt_phone) && email.equals(rt_email) && gender.equals(rt_gender)) {//kiem tra resultSet co du lieu khong, mac dinh la true
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setContentText("Nội dung không thay đổi!");
-                        alert.show();
-                    }
-                    else {
-                        psInsert = conn.prepareStatement("UPDATE tbl_accounts SET username = ?, gender = ?, email = ?, phone = ? WHERE username = ?");
-                        psInsert.setString(1, username);
-                        psInsert.setString(2, gender);
-                        psInsert.setString(3, email);
-                        psInsert.setString(4, phone);
-                        psInsert.setString(5, old_user);
-                        int n = psInsert.executeUpdate();
+            while (resultSet.next()) {//lap qua all du lieu co trong tap du lieu da tim thay
+                String rt_username = resultSet.getString("username");
+                String rt_gender = resultSet.getString("gender");
+                String rt_phone = resultSet.getString("phone");
+                String rt_email = resultSet.getString("email");
+                if(username.equals(rt_username) && phone.equals(rt_phone) && email.equals(rt_email) && gender.equals(rt_gender)) {//kiem tra resultSet co du lieu khong, mac dinh la true
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setContentText("Nội dung không thay đổi!");
+                    alert.show();
+                }
+                else {
+                    psInsert = conn.prepareStatement("UPDATE tbl_accounts SET username = ?, gender = ?, email = ?, phone = ? WHERE username = ?");
+                    psInsert.setString(1, username);
+                    psInsert.setString(2, gender);
+                    psInsert.setString(3, email);
+                    psInsert.setString(4, phone);
+                    psInsert.setString(5, old_user);
+                    psInsert.executeUpdate();
 
-                        changeScene(event, "/FXMLs/Host/Manager.fxml", "Quản lý phòng trọ", username, gender, email, phone);
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Thông báo");
-                        alert.setContentText("Đã cập nhật thành công!");
-                        alert.show();
-                    }
+                    changeScene(event, "/FXMLs/MainView.fxml", "Quản lý phòng trọ", username, gender, email, phone);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Thông báo");
+                    alert.setContentText("Đã cập nhật thành công!");
+                    alert.show();
                 }
             }
         }catch(Exception e){
@@ -423,26 +408,39 @@ public class DatabaseDriver {
     }
 
     //thong ke so phong da thue
-    public static int getTotalRendRoom () throws SQLException {
+    public static String getTotalRendRoom () throws SQLException {
         Connection conn = null;
         PreparedStatement psSelect = null;
+        PreparedStatement psSelectTotal = null;
         ResultSet rsSelect = null;
-        int cnt = 0;
+        ResultSet rsSelectTotal = null;
+        int cnt = 0, cntTotal = 0;
+        String kq = "";
 
         try {
             conn = ConnectDB.connectDB();
             assert conn != null;
-            psSelect = conn.prepareStatement("SELECT COUNT(*) AS total FROM tbl_room WHERE roomStatus = 'Đã thuê'");
+            psSelect = conn.prepareStatement("SELECT COUNT(*) AS total1 FROM tbl_room WHERE roomStatus = 'Đã thuê'");
             rsSelect = psSelect.executeQuery();
+            psSelectTotal = conn.prepareStatement("SELECT COUNT(*) AS total2 FROM tbl_room");
+            rsSelectTotal = psSelectTotal.executeQuery();
 
-            while(rsSelect.next()) {
-                cnt = rsSelect.getInt("total");
+            while(rsSelect.next() && rsSelectTotal.next()) {
+                cnt = rsSelect.getInt("total1");
+                cntTotal = rsSelectTotal.getInt("total2");
+                kq = String.format("%d/%d", cnt, cntTotal);
             }
         }catch (Exception e) {
             System.out.println(e.getMessage());
         }finally {
+            if(rsSelectTotal != null){
+                rsSelectTotal.close();
+            }
             if(rsSelect != null){
                 rsSelect.close();
+            }
+            if(psSelectTotal != null) {
+                psSelectTotal.close();
             }
             if(psSelect != null) {
                 psSelect.close();
@@ -452,7 +450,7 @@ public class DatabaseDriver {
             }
         }
 
-        return cnt;
+        return kq;
     }
 
     //thong ke so nguoi thue tro
@@ -465,7 +463,7 @@ public class DatabaseDriver {
         try {
             conn = ConnectDB.connectDB();
             assert conn != null;
-            psSelect = conn.prepareStatement("SELECT COUNT(*) AS total FROM tbl_infoRender");
+            psSelect = conn.prepareStatement("SELECT COUNT(*) AS total FROM tbl_infoRender JOIN tbl_rendRoom ON tbl_infoRender.id_render = tbl_rendRoom.id_render JOIN tbl_room ON tbl_rendRoom.id_room = tbl_room.id_room");
             rsSelect = psSelect.executeQuery();
 
             while(rsSelect.next()) {
@@ -1219,44 +1217,44 @@ public class DatabaseDriver {
     }
 
 //    //lay du lieu khach thue phong hien thi len view quan ly khach thue
-//    public static ObservableList<InfoRendRoom> getRenderList() throws SQLException {
-//        Connection conn = null;
-//        PreparedStatement psSelect = null;
-//        ResultSet rsSelect = null;
-//        ObservableList<InfoRendRoom> renderList = FXCollections.observableArrayList();
-//
-//        try {
-//            conn = ConnectDB.connectDB();
-//            assert conn != null;
-//            psSelect = conn.prepareStatement("SELECT fullname, gender, CCCD, phone, homeTown, check_in_date, roomName FROM tbl_infoRender JOIN tbl_rendRoom ON tbl_infoRender.id_render = tbl_rendRoom.id_render JOIN tbl_room ON tbl_rendRoom.id_room = tbl_room.id_room");
-//            rsSelect = psSelect.executeQuery();
-//
-//            while(rsSelect.next()) {
-//                String rt_fullName = rsSelect.getString("fullname");
-//                String rt_gender = rsSelect.getString("gender");
-//                String rt_CCCD = rsSelect.getString("CCCD");
-//                String rt_phone = rsSelect.getString("phone");
-//                String rt_homeTown = rsSelect.getString("homeTown");
-//                Date rt_checkInDate = rsSelect.getDate("check_in_date");
-//                String rt_roomName = rsSelect.getString("roomName");
-//
-//                renderList.add(new InfoRendRoom(rt_fullName, rt_CCCD, rt_gender, rt_homeTown, rt_phone, rt_checkInDate, rt_roomName));
-//            }
-//        }catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }finally {
-//            if(rsSelect != null) {
-//                rsSelect.close();
-//            }
-//            if(psSelect != null) {
-//                psSelect.close();
-//            }
-//            if(conn != null) {
-//                conn.close();
-//            }
-//        }
-//        return renderList;
-//    }
+    public static ObservableList<InfoRendRoomData> getRenderList() throws SQLException {
+        Connection conn = null;
+        PreparedStatement psSelect = null;
+        ResultSet rsSelect = null;
+        ObservableList<InfoRendRoomData> renderList = FXCollections.observableArrayList();
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn != null;
+            psSelect = conn.prepareStatement("SELECT fullname, gender, CCCD, phone, homeTown, check_in_date, roomName FROM tbl_infoRender JOIN tbl_rendRoom ON tbl_infoRender.id_render = tbl_rendRoom.id_render JOIN tbl_room ON tbl_rendRoom.id_room = tbl_room.id_room");
+            rsSelect = psSelect.executeQuery();
+
+            while(rsSelect.next()) {
+                String rt_fullName = rsSelect.getString("fullname");
+                String rt_gender = rsSelect.getString("gender");
+                String rt_CCCD = rsSelect.getString("CCCD");
+                String rt_phone = rsSelect.getString("phone");
+                String rt_homeTown = rsSelect.getString("homeTown");
+                Date rt_checkInDate = rsSelect.getDate("check_in_date");
+                String rt_roomName = rsSelect.getString("roomName");
+
+                renderList.add(new InfoRendRoomData(rt_fullName, rt_CCCD, rt_gender, rt_homeTown, rt_phone, rt_checkInDate, rt_roomName));
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            if(rsSelect != null) {
+                rsSelect.close();
+            }
+            if(psSelect != null) {
+                psSelect.close();
+            }
+            if(conn != null) {
+                conn.close();
+            }
+        }
+        return renderList;
+    }
 
     //nut sua thong tin render
     public static void editInfo(ActionEvent event, String oldName, String name, String cccd, String homeTown, String phone) {
@@ -1408,5 +1406,252 @@ public class DatabaseDriver {
         }
     }
 
+//them, sua, xoa dich vu
+    //nut them dich vu
+    public static void addService(ActionEvent event, String serviceName, Double servicePrice) {
+        Connection conn = null;
+        PreparedStatement psSelect = null;
+        PreparedStatement psInsert = null;
+        ResultSet rsSelect = null;
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn != null;
+            psSelect = conn.prepareStatement("SELECT serviceName FROM tbl_serviceType WHERE serviceName = ?");
+            psSelect.setString(1, serviceName);
+            rsSelect = psSelect.executeQuery();
+
+            if(rsSelect.isBeforeFirst()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Thông báo");
+                alert.setContentText("Tên dịch vụ đã tồn tại!");
+                alert.show();
+            }else {
+                psInsert = conn.prepareStatement("INSERT INTO tbl_serviceType (serviceName, servicePrice) VALUES (?, ?)");
+                psInsert.setString(1, serviceName);
+                psInsert.setDouble(2, servicePrice);
+                psInsert.executeUpdate();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thông báo");
+                alert.setContentText("Thêm dịch vụ thành công!");
+                alert.show();
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            if(rsSelect != null) {
+                try {
+                    rsSelect.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(psInsert != null) {
+                try {
+                    psInsert.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(psSelect != null) {
+                try {
+                    psSelect.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
+    //nut sua dich vu
+    public static void editService(ActionEvent event, String serviceName, Double servicePrice) {
+        Connection conn = null;
+        PreparedStatement psSelect = null;
+        PreparedStatement psInsert = null;
+        ResultSet rsSelect = null;
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn != null;
+            psSelect = conn.prepareStatement("SELECT serviceName, servicePrice FROM tbl_serviceType WHERE serviceName = ?");
+            psSelect.setString(1, serviceName);
+            rsSelect = psSelect.executeQuery();
+
+            if(!rsSelect.isBeforeFirst()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Thông báo");
+                alert.setContentText("Dịch vụ không tồn tại!");
+                alert.show();
+            }else {
+                while(rsSelect.next()) {
+                    String rt_Name = rsSelect.getString("serviceName");
+                    Double rt_Price = rsSelect.getDouble("servicePrice");
+                    if(rt_Name.equals(serviceName) && rt_Price.equals(servicePrice)) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Thông báo");
+                        alert.setContentText("Nội dung không thay đổi!");
+                        alert.show();
+                    }else {
+                        psInsert = conn.prepareStatement("UPDATE tbl_serviceType SET servicePrice = ? WHERE serviceName = ?");
+                        psInsert.setDouble(1, servicePrice);
+                        psInsert.setString(2, serviceName);
+                        psInsert.executeUpdate();
+
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Thông báo");
+                        alert.setContentText("Cập nhật dịch vụ thành công!");
+                        alert.show();
+                    }
+                }
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            if(rsSelect != null) {
+                try {
+                    rsSelect.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(psInsert != null) {
+                try {
+                    psInsert.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(psSelect != null) {
+                try {
+                    psSelect.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
+    //nut xoa dich vu
+    public static void delService(ActionEvent event, String serviceName) {
+        Connection conn = null;
+        PreparedStatement psSelect = null;
+        PreparedStatement psDel = null;
+        ResultSet rsSelect = null;
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn != null;
+            psSelect = conn.prepareStatement("SELECT serviceName FROM tbl_serviceType WHERE serviceName = ?");
+            psSelect.setString(1, serviceName);
+            rsSelect = psSelect.executeQuery();
+
+            if(!rsSelect.isBeforeFirst()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Thông báo");
+                alert.setContentText("Dịch vụ không tồn tại!");
+                alert.show();
+            }else {
+                psDel = conn.prepareStatement("DELETE FROM tbl_serviceType WHERE serviceName = ?");
+                psDel.setString(1, serviceName);
+                psDel.executeUpdate();
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Thông báo");
+                alert.setContentText("Xóa dịch vụ thành công!");
+                alert.show();
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            if(rsSelect != null) {
+                try {
+                    rsSelect.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(psDel != null) {
+                try {
+                    psDel.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(psSelect != null) {
+                try {
+                    psSelect.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+//hien thi danh sach dich vu len bang
+    public static ObservableList<serviceData> getServiceList() {
+        Connection conn = null;
+        PreparedStatement psSelect = null;
+        ResultSet rsSelect = null;
+        ObservableList<serviceData> serviceList = FXCollections.observableArrayList();
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn != null;
+            psSelect = conn.prepareStatement("SELECT serviceName, servicePrice FROM tbl_serviceType");
+            rsSelect = psSelect.executeQuery();
+
+            while(rsSelect.next()) {
+                String rt_Name = rsSelect.getString("serviceName");
+                BigDecimal rt_Price = rsSelect.getBigDecimal("servicePrice");
+                serviceList.add(new serviceData(rt_Name, rt_Price));
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            if(rsSelect != null) {
+                try {
+                    rsSelect.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(psSelect != null) {
+                try {
+                    psSelect.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        return serviceList;
+    }
 }
 
