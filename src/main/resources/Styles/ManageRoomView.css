@@ -11,6 +11,13 @@ Button {
     -fx-background-radius: 20;
 }
 
+.btn_bill {
+    -fx-pref-width: 96;
+    -fx-font-size: 1.2em;
+    -fx-background-color: #3aff51;
+}
+
+
 .hover:hover {
     -fx-cursor: hand;
 }

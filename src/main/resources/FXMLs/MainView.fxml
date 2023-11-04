@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.chart.CategoryAxis?>
@@ -64,7 +65,7 @@
                                                  <FontAwesomeIconView glyphName="GROUP" size="30" />
                                              </graphic>
                                          </Button>
-                                    <Button fx:id="btn_manage_service" layoutX="15.0" layoutY="146.0" mnemonicParsing="false" prefWidth="321.0" text="Quản lý dịch vụ và hóa đơn" wrapText="true">
+                                    <Button fx:id="btn_manage_service" layoutX="15.0" layoutY="146.0" mnemonicParsing="false" prefWidth="321.0" text="Dịch vụ và hóa đơn" wrapText="true">
                                        <graphic>
                                           <FontAwesomeIconView glyphName="COG" size="30" />
                                        </graphic>
@@ -258,7 +259,7 @@
                                              <children>
                                                  <TextField fx:id="tf_search_render" layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="250.0" promptText="Tìm kiếm..." styleClass="search" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="6.0" />
                                                  <FontAwesomeIconView fill="#6078ea" glyphName="SEARCH" layoutX="24.0" layoutY="36.0" size="20" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="11.0" />
-                                                 <TableView fx:id="tbv_list_customer" layoutX="16.0" layoutY="70.0" prefHeight="409.0" prefWidth="924.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                                                 <TableView fx:id="tbv_list_customer" layoutX="16.0" layoutY="70.0" prefHeight="409.0" prefWidth="924.0" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                                                      <columns>
                                                          <TableColumn fx:id="col_fullname" prefWidth="156.79996299743652" text="Họ và tên" />
                                                          <TableColumn fx:id="col_cccd" prefWidth="115.19998168945312" text="CCCD" />
@@ -266,9 +267,15 @@
                                                          <TableColumn fx:id="col_addr" prefWidth="139.99993896484375" text="Quê quán" />
                                                          <TableColumn fx:id="col_phone" prefWidth="114.39999389648438" text="Số điện thoại" />
                                                          <TableColumn fx:id="col_rent_date" prefWidth="109.60003662109375" text="Ngày thuê" />
-                                                         <TableColumn fx:id="col_room_name_render" prefWidth="124.0" text="Tên phòng" />
+                                                         <TableColumn fx:id="col_room_name_render" prefWidth="135.20001220703125" text="Tên phòng" />
                                                      </columns>
                                                  </TableView>
+                                          <Button fx:id="btn_pay" layoutX="761.0" layoutY="491.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="96.0" text="Thanh toán" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                             <styleClass>
+                                                <String fx:value="btn_bill" />
+                                                <String fx:value="hover" />
+                                             </styleClass>
+                                          </Button>
                                              </children>
                                          </AnchorPane>
                                          <AnchorPane layoutX="14.0" layoutY="554.0" prefHeight="183.0" prefWidth="851.0" styleClass="frame" stylesheets="@../Styles/ManageRoomView.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="554.0">
@@ -317,26 +324,26 @@
                                  </AnchorPane>
                               <AnchorPane fx:id="view_manage_service" layoutX="10.0" layoutY="10.0" prefHeight="750.4" prefWidth="890.4" styleClass="anchor_child" stylesheets="@../Styles/ManageRoomView.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <AnchorPane layoutX="155.0" layoutY="158.0" prefHeight="440.0" prefWidth="440.0" styleClass="frame" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
+                                    <AnchorPane layoutX="155.0" layoutY="158.0" prefHeight="440.0" prefWidth="440.0" styleClass="frame" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="5.0">
                                        <children>
-                                          <Text layoutX="141.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Quản lý dịch vụ" AnchorPane.leftAnchor="140.0" AnchorPane.topAnchor="14.0" />
-                                          <TableView fx:id="tbv_service_list" layoutX="20.0" layoutY="57.0" prefHeight="366.0" prefWidth="399.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+                                          <Text layoutX="109.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Quản lý dịch vụ" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="14.0" />
+                                          <TableView fx:id="tbv_service_list" layoutX="24.0" layoutY="84.0" prefHeight="348.0" prefWidth="314.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
                                             <columns>
-                                              <TableColumn fx:id="col_service_name" prefWidth="209.60004234313965" text="Tên dịch vụ" />
-                                              <TableColumn fx:id="col_service_price" prefWidth="209.5999755859375" text="Giá" />
+                                              <TableColumn fx:id="col_service_name" prefWidth="186.3999843597412" text="Tên dịch vụ" />
+                                              <TableColumn fx:id="col_service_price" prefWidth="169.60000610351562" text="Giá" />
                                             </columns>
                                           </TableView>
                                        </children>
                                     </AnchorPane>
-                                    <AnchorPane layoutX="14.0" layoutY="554.0" prefHeight="260.0" prefWidth="440.0" styleClass="frame" stylesheets="@../Styles/ManageRoomView.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="5.0">
+                                    <AnchorPane layoutX="14.0" layoutY="554.0" prefHeight="260.0" prefWidth="458.0" styleClass="frame" stylesheets="@../Styles/ManageRoomView.css" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="500.0">
                                        <children>
-                                          <HBox layoutX="24.0" layoutY="62.0" prefHeight="38.0" prefWidth="250.0" styleClass="hb_field" AnchorPane.leftAnchor="70.0">
+                                          <HBox layoutX="24.0" layoutY="62.0" prefHeight="38.0" prefWidth="250.0" styleClass="hb_field" AnchorPane.leftAnchor="50.0">
                                              <children>
                                                 <Label text="Tên dịch vụ:" />
                                                 <TextField fx:id="tf_service_name" prefHeight="32.0" prefWidth="150.0" />
                                              </children>
                                           </HBox>
-                                          <HBox layoutX="24.0" layoutY="108.0" prefHeight="38.0" prefWidth="250.0" styleClass="hb_field" AnchorPane.leftAnchor="70.0">
+                                          <HBox layoutX="24.0" layoutY="108.0" prefHeight="38.0" prefWidth="250.0" styleClass="hb_field" AnchorPane.leftAnchor="50.0">
                                              <children>
                                                 <Label text="Giá:" />
                                                 <TextField fx:id="tf_service_price" prefHeight="32.0" prefWidth="150.0">
@@ -346,10 +353,23 @@
                                                 </TextField>
                                              </children>
                                           </HBox>
-                                          <Text layoutX="139.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Thêm dịch vụ" AnchorPane.leftAnchor="140.0" AnchorPane.topAnchor="14.0" />
-                                          <Button fx:id="btn_service_del" layoutX="47.0" layoutY="181.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="43.0" style="-fx-background-color: red;" text="Xóa" AnchorPane.bottomAnchor="40.0" />
-                                          <Button fx:id="btn_service_add" layoutX="162.0" layoutY="181.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="43.0" style="-fx-background-color: #00ff2b;" text="Thêm" AnchorPane.bottomAnchor="40.0" />
-                                          <Button fx:id="btn_service_edit" layoutX="278.0" layoutY="181.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="43.0" style="-fx-background-color: yellow;" text="Sửa" AnchorPane.bottomAnchor="40.0" />
+                                          <Text layoutX="139.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Thêm dịch vụ" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="14.0" />
+                                          <Button fx:id="btn_service_del" layoutX="27.0" layoutY="176.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="43.0" style="-fx-background-color: red;" text="Xóa" AnchorPane.bottomAnchor="40.0" />
+                                          <Button fx:id="btn_service_add" layoutX="142.0" layoutY="176.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="43.0" style="-fx-background-color: #00ff2b;" text="Thêm" AnchorPane.bottomAnchor="40.0" />
+                                          <Button fx:id="btn_service_edit" layoutX="258.0" layoutY="176.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="43.0" style="-fx-background-color: yellow;" text="Sửa" AnchorPane.bottomAnchor="40.0" />
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane layoutX="487.0" layoutY="32.0" prefHeight="200.0" prefWidth="200.0" styleClass="frame" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="390.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                                       <children>
+                                          <TextField fx:id="tf_search_bill" layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="250.0" promptText="Tìm kiếm..." styleClass="search" AnchorPane.topAnchor="14.0" />
+                                          <FontAwesomeIconView glyphName="SEARCH" layoutX="24.0" layoutY="36.0" size="20" AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="18.85714340209961" />
+                                          <TableView fx:id="tbv_bill_list" layoutX="14.0" layoutY="63.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+                                            <columns>
+                                              <TableColumn fx:id="col_billDetail_roomName" prefWidth="181.59994506835938" text="Tên phòng" />
+                                              <TableColumn fx:id="col_billDetail_status" prefWidth="138.4000244140625" text="Trạng thái thanh toán" />
+                                                <TableColumn fx:id="col_billDetail_paidDate" prefWidth="148.79998779296875" text="Ngày đóng" />
+                                            </columns>
+                                          </TableView>
                                        </children>
                                     </AnchorPane>
                                  </children>

@@ -115,5 +115,13 @@ public class ViewFactory {
         stage.setMinHeight(550);
         stage.setMinWidth(680);
     }
+
+    //show cua so Hoa don
+    public void showBillWindow() {
+        FXMLLoader bill = new FXMLLoader(getClass().getResource("/FXMLs/Bill.fxml"));
+        createStage(bill, "Hóa đơn");
+        stage.setMinHeight(550);
+        stage.setMinWidth(680);
+    }
 }
 

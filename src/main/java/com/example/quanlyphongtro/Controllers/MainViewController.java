@@ -84,6 +84,9 @@ public class MainViewController implements Initializable {
     public Button btn_edit_save;
 
     @FXML
+    public Button btn_pay;
+
+    @FXML
     public AreaChart<?, ?> chart_income;
 
     @FXML
@@ -126,6 +129,15 @@ public class MainViewController implements Initializable {
     public TableColumn<?, ?> col_service_price;
 
     @FXML
+    public TableColumn<?, ?> col_billDetail_paidDate;
+
+    @FXML
+    public TableColumn<?, ?> col_billDetail_roomName;
+
+    @FXML
+    public TableColumn<?, ?> col_billDetail_status;
+
+    @FXML
     public ComboBox<String> combo_room_status;
 
     @FXML
@@ -164,6 +176,9 @@ public class MainViewController implements Initializable {
     public TableView<serviceData> tbv_service_list;
 
     @FXML
+    public TableView<?> tbv_bill_list;
+
+    @FXML
     public TextField tf_edit_cccd;
 
     @FXML
@@ -189,6 +204,9 @@ public class MainViewController implements Initializable {
 
     @FXML
     public TextField tf_search;
+
+    @FXML
+    public TextField tf_search_bill;
 
     @FXML
     public TextField tf_search_render;
@@ -293,8 +311,9 @@ public class MainViewController implements Initializable {
         //nut xoa loai phong
         btn_delete_room_type.setOnAction(this::delRoomType);
 
-        //nut checkIn phong
+        //nut checkIn phong, nut thanh toan
         btn_rent.setOnAction(e -> Model.getInstance().getViewFactory().showCheckInWindow());
+        btn_pay.setOnAction(e -> Model.getInstance().getViewFactory().showBillWindow());
 
         //nut sua, xoa khach thue
         btn_edit.setOnAction(this::editInfo);
@@ -962,7 +981,7 @@ public class MainViewController implements Initializable {
         alert.setContentText("Bạn có chắc muốn thoát?");
         Optional<ButtonType> option = alert.showAndWait();
 
-        if(option.get().equals(ButtonType.OK)){
+        if(option.isPresent() && option.get().equals(ButtonType.OK)){
             Stage stage = (Stage) btn_logout.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(stage);
             Model.getInstance().getViewFactory().showLoginWindow();
@@ -975,9 +994,8 @@ public class MainViewController implements Initializable {
         String reg = "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$";
 
         // Kiem tra dinh dang
-        boolean kt = str.matches(reg);
 
-        return kt;
+        return str.matches(reg);
     }
 
     //kiem tra email
@@ -985,7 +1003,6 @@ public class MainViewController implements Initializable {
         //bieu thuc chinh quy dinh dang 1 email
         String reg = "^[A-Za-z0-9]+[A-Za-z0-9]*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)$";
 
-        boolean kt = str.matches(reg);
-        return kt;
+        return str.matches(reg);
     }
 }
