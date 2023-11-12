@@ -1,5 +1,6 @@
 package com.example.quanlyphongtro.Models;
 
+import com.example.quanlyphongtro.Controllers.BillController;
 import com.example.quanlyphongtro.Controllers.MainViewController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,8 +10,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.Objects;
@@ -1082,16 +1085,16 @@ public class DatabaseDriver {
 
     //form checkIn
     public static void checkIn(ActionEvent event, String renderName, String gender, String CCCD, String phone,
-                               String homeTown, String roomName, Double deposit, Date rendDate) throws SQLException {
+                               String homeTown, String roomName, Double deposit, Date rendDate,
+                               int initElectric, int initWater) throws SQLException {
         Connection conn = null;
-        PreparedStatement psInsertRender = null;
-        PreparedStatement psSelectIDRoom = null;
+        PreparedStatement psInsertRender = null, psInsertElectricService = null, psInsertWaterService = null;
+        PreparedStatement psSelectIDRoom = null, psSelectIdElectric = null, psSelectIdWater = null;
         PreparedStatement psSelectIDRender = null;
         PreparedStatement psEditStatus = null;
         PreparedStatement psInsertRendRoom = null;
-        ResultSet rsIDRoom = null;
+        ResultSet rsIDRoom = null, rsSelectIdElectric = null, rsSelectIdWater = null;
         ResultSet rsIDRender = null;
-//        ResultSet rsNumberPeople = null;
 
         try {
             conn = ConnectDB.connectDB();
@@ -1112,27 +1115,43 @@ public class DatabaseDriver {
             psSelectIDRender.setString(1, renderName);
             rsIDRender = psSelectIDRender.executeQuery();
 
-//            while(rsIDRoom.next()){
-//                int rt_id_room = rsIDRoom.getInt("id_room");
-//                psSelectNumberPeople = conn.prepareStatement("SELECT COUNT(*) AS number_people FROM tbl_render JOIN tbl_renRoom ON tbl_render.id_render = tbl_rendRoom.id_render WHERE tbl_rendRoom.id_room = ?");
-//                psSelectNumberPeople.setInt(1, rt_id_room);
-//                rsNumberPeople = psSelectNumberPeople.executeQuery();
-//            }
+            //lay id loai dich vu dien, nuoc
+            psSelectIdElectric = conn.prepareStatement("SELECT id_serviceType FROM tbl_serviceType WHERE serviceName LIKE '%điện%' OR serviceName LIKE '%dien%'");
+            rsSelectIdElectric = psSelectIdElectric.executeQuery();
+            psSelectIdWater = conn.prepareStatement("SELECT id_serviceType FROM tbl_serviceType WHERE serviceName LIKE '%nước%' OR serviceName LIKE '%nuoc%'");
+            rsSelectIdWater = psSelectIdWater.executeQuery();
 
-            while(rsIDRoom.next() && rsIDRender.next()) {
+            while(rsIDRoom.next() && rsIDRender.next() && rsSelectIdElectric.next() && rsSelectIdWater.next()) {
                 int rt_id_room = rsIDRoom.getInt("id_room");
                 int rt_id_render = rsIDRender.getInt("id_render");
+                int rt_id_electric = rsSelectIdElectric.getInt("id_serviceType");
+                int rt_id_water = rsSelectIdWater.getInt("id_serviceType");
 
-                psInsertRendRoom = conn.prepareStatement("INSERT INTO tbl_rendRoom (check_in_date, deposit, id_room, id_render) VALUES (?, ?, ?, ?)");
+                psInsertRendRoom = conn.prepareStatement("INSERT INTO tbl_rendRoom (check_in_date, deposit, init_electric_indicator, init_water_indicator, id_room, id_render) VALUES (?, ?, ?, ?, ?, ?)");
                 psInsertRendRoom.setDate(1, rendDate);
                 psInsertRendRoom.setDouble(2, deposit);
-                psInsertRendRoom.setInt(3, rt_id_room);
-                psInsertRendRoom.setInt(4, rt_id_render);
+                psInsertRendRoom.setInt(3, initElectric);
+                psInsertRendRoom.setInt(4, initWater);
+                psInsertRendRoom.setInt(5, rt_id_room);
+                psInsertRendRoom.setInt(6, rt_id_render);
                 psInsertRendRoom.executeUpdate();
 
                 psEditStatus = conn.prepareStatement("UPDATE tbl_room SET roomStatus = 'Đã thuê' WHERE roomName = ?");
                 psEditStatus.setString(1, roomName);
                 psEditStatus.executeUpdate();
+
+                psInsertElectricService = conn.prepareStatement("INSERT INTO tbl_service (new_indicator, old_indicator, id_serviceType, id_room) VALUES (?, ?, ?, ?)");
+                psInsertElectricService.setInt(1, initElectric);
+                psInsertElectricService.setInt(2, initElectric);
+                psInsertElectricService.setInt(3, rt_id_electric);
+                psInsertElectricService.setInt(4, rt_id_room);
+                psInsertElectricService.executeUpdate();
+                psInsertWaterService = conn.prepareStatement("INSERT INTO tbl_service (new_indicator, old_indicator, id_serviceType, id_room) VALUES (?, ?, ?, ?)");
+                psInsertWaterService.setInt(1, initWater);
+                psInsertWaterService.setInt(2, initWater);
+                psInsertWaterService.setInt(3, rt_id_water);
+                psInsertWaterService.setInt(4, rt_id_room);
+                psInsertWaterService.executeUpdate();
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thông báo");
@@ -1142,26 +1161,24 @@ public class DatabaseDriver {
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }finally {
-            if (rsIDRender != null) {
+            if (rsIDRender != null && rsIDRoom != null && rsSelectIdElectric != null && rsSelectIdWater != null) {
                 rsIDRender.close();
-            }
-            if (rsIDRoom != null) {
                 rsIDRoom.close();
+                rsSelectIdElectric.close();
+                rsSelectIdWater.close();
             }
-            if (psInsertRendRoom != null) {
+            if (psInsertRendRoom != null && psEditStatus != null && psSelectIDRender != null && psSelectIDRoom != null &&
+                    psInsertRender != null && psInsertElectricService != null && psInsertWaterService != null &&
+                    psSelectIdElectric != null && psSelectIdWater != null) {
                 psInsertRendRoom.close();
-            }
-            if (psEditStatus != null) {
                 psEditStatus.close();
-            }
-            if (psSelectIDRender != null) {
                 psSelectIDRender.close();
-            }
-            if (psSelectIDRoom != null) {
                 psSelectIDRoom.close();
-            }
-            if (psInsertRender != null) {
                 psInsertRender.close();
+                psInsertElectricService.close();
+                psInsertWaterService.close();
+                psSelectIdElectric.close();
+                psSelectIdWater.close();
             }
             if(conn != null) {
                 conn.close();
@@ -1406,7 +1423,7 @@ public class DatabaseDriver {
         }
     }
 
-//them, sua, xoa dich vu
+//add, sua, xoa dich vu
     //nut them dich vu
     public static void addService(ActionEvent event, String serviceName, Double servicePrice) {
         Connection conn = null;
@@ -1652,6 +1669,258 @@ public class DatabaseDriver {
             }
         }
         return serviceList;
+    }
+
+//nut tao hoa don
+    public static void createBill(ActionEvent event, String roomName, Double newElectric,
+                                  Double newWater, Date dateCreate, Double otherBill,
+                                  Double electricBill, Double waterBill, Double sumBill, String note, String paid, String fullName) throws SQLException {
+        Connection conn = null;
+        PreparedStatement psCheckRoom = null, psSelectIdElectric = null, psSelectIdWater = null, psSelectInitIndicator = null,
+                psSelectOldElecIndi = null, psSelectOldWaterIndi = null, psSelectIdRender = null, psInsertInitWaterIndex = null,
+                psInsertInitElectricIndex = null, psInsertBill = null;
+        ResultSet rsCheckRoom = null, rsSelectIdElectric = null, rsSelectIdWater = null, rsSelectInitIndicator = null,
+                rsSelectIdRender = null, rsSelectOldElecIndi = null, rsSelectOldWaterIndi;
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn != null;
+
+            //lay chi so dien, chi so nuoc ban dau cua phong tro
+            psSelectInitIndicator = conn.prepareStatement("SELECT tbl_room.id_room FROM tbl_room JOIN tbl_rendRoom ON tbl_room.id_room = tbl_rendRoom.id_room JOIN tbl_infoRender ON tbl_rendRoom.id_render = tbl_infoRender.id_render WHERE roomName = ?");
+            psSelectInitIndicator.setString(1, roomName);
+            rsSelectInitIndicator = psSelectInitIndicator.executeQuery();
+
+            //kiem tra phong nay co la phong moi thue khong
+            psCheckRoom = conn.prepareStatement("SELECT tbl_room.id_room FROM tbl_room JOIN tbl_service ON tbl_room.id_room = tbl_service.id_room WHERE roomName = ?");
+            psCheckRoom.setString(1, roomName);
+            rsCheckRoom = psCheckRoom.executeQuery();
+
+            //lay id loai dich vu dien, nuoc
+            psSelectIdElectric = conn.prepareStatement("SELECT id_serviceType FROM tbl_serviceType WHERE serviceName LIKE '%điện%' OR serviceName LIKE '%dien%'");
+            rsSelectIdElectric = psSelectIdElectric.executeQuery();
+            psSelectIdWater = conn.prepareStatement("SELECT id_serviceType FROM tbl_serviceType WHERE serviceName LIKE '%nước%' OR serviceName LIKE '%nuoc%'");
+            rsSelectIdWater = psSelectIdWater.executeQuery();
+
+            if(!rsSelectIdElectric.isBeforeFirst() || !rsSelectIdWater.isBeforeFirst()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Thông báo");
+                alert.setContentText("Dịch vụ điện hoặc nước không tồn tại!");
+                alert.show();
+            }
+            else {
+                while(rsSelectIdElectric.next() && rsSelectIdWater.next()) {
+                    int rt_idElectric = rsSelectIdElectric.getInt("id_serviceType");
+                    int rt_idWater = rsSelectIdWater.getInt("id_serviceType");
+
+                    if(rsCheckRoom.isBeforeFirst()) {
+                        while(rsSelectInitIndicator.next()) {
+                            int rt_id_room = rsSelectInitIndicator.getInt("id_room");
+                            //lay chi so dien, nuoc cu tu chi so dien, nuoc moi cua bang service
+                            psSelectOldElecIndi = conn.prepareStatement("SELECT new_indicator FROM tbl_service WHERE id_serviceType = ? AND id_room = ?");
+                            psSelectOldElecIndi.setInt(1, rt_idElectric);
+                            psSelectOldElecIndi.setInt(2, rt_id_room);
+                            rsSelectOldElecIndi = psSelectOldElecIndi.executeQuery();
+                            psSelectOldWaterIndi = conn.prepareStatement("SELECT new_indicator FROM tbl_service WHERE id_serviceType = ? AND id_room = ?");
+                            psSelectOldWaterIndi.setInt(1, rt_idWater);
+                            psSelectOldWaterIndi.setInt(2, rt_id_room);
+                            rsSelectOldWaterIndi = psSelectOldWaterIndi.executeQuery();
+
+                            if(rsSelectOldElecIndi.isBeforeFirst() && rsSelectOldWaterIndi.isBeforeFirst()) {
+                                while (rsSelectOldElecIndi.next() && rsSelectOldWaterIndi.next()) {
+                                    int rt_new_elec_indi = rsSelectOldElecIndi.getInt("new_indicator");
+                                    int rt_new_water_indi = rsSelectOldWaterIndi.getInt("new_indicator");
+
+                                    psInsertInitElectricIndex = conn.prepareStatement("UPDATE tbl_service SET new_indicator = ?, old_indicator = ? WHERE id_room = ? AND id_serviceType = ?");
+                                    psInsertInitElectricIndex.setDouble(1, newElectric);
+                                    psInsertInitElectricIndex.setDouble(2, rt_new_elec_indi);
+                                    psInsertInitElectricIndex.setInt(3, rt_id_room);
+                                    psInsertInitElectricIndex.setInt(4, rt_idElectric);
+                                    psInsertInitElectricIndex.executeUpdate();
+                                    psInsertInitWaterIndex = conn.prepareStatement("UPDATE tbl_service SET new_indicator = ?, old_indicator = ? WHERE id_room = ? AND id_serviceType = ?");
+                                    psInsertInitWaterIndex.setDouble(1, newWater);
+                                    psInsertInitWaterIndex.setDouble(2, rt_new_water_indi);
+                                    psInsertInitWaterIndex.setInt(3, rt_id_room);
+                                    psInsertInitWaterIndex.setInt(4, rt_idWater);
+                                    psInsertInitWaterIndex.executeUpdate();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //lay id_render de luu vao csdl tbl_bill
+                psSelectIdRender = conn.prepareStatement("SELECT tbl_infoRender.id_render FROM tbl_infoRender JOIN tbl_rendRoom ON tbl_infoRender.id_render = tbl_rendRoom.id_render JOIN tbl_room ON tbl_rendRoom.id_room = tbl_room.id_room WHERE fullname = ?");
+                psSelectIdRender.setString(1, fullName);
+                rsSelectIdRender = psSelectIdRender.executeQuery();
+
+                while(rsSelectIdRender.next()) {
+                    int rt_id_render = rsSelectIdRender.getInt("id_render");
+                    psInsertBill = conn.prepareStatement("INSERT INTO tbl_bill (date_created, note, paid, electric_bill, water_bill, other_bill, sum_bill, id_render) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                    psInsertBill.setDate(1, dateCreate);
+                    psInsertBill.setString(2, note);
+                    psInsertBill.setString(3, paid);
+                    psInsertBill.setDouble(4, electricBill);
+                    psInsertBill.setDouble(5, waterBill);
+                    psInsertBill.setDouble(6, otherBill);
+                    psInsertBill.setDouble(7, sumBill);
+                    psInsertBill.setInt(8, rt_id_render);
+                    psInsertBill.executeUpdate();
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Thông báo");
+                    alert.setContentText("Tạo hóa đơn thành công!");
+                    alert.show();
+                }
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            if(rsSelectOldElecIndi != null && rsSelectInitIndicator != null && rsCheckRoom != null && rsSelectIdWater != null &&
+               rsSelectIdElectric != null && psInsertBill != null && psInsertInitWaterIndex != null &&
+               psInsertInitElectricIndex != null && rsSelectIdRender != null) {
+                rsSelectOldElecIndi.close();
+                rsSelectInitIndicator.close();
+                rsCheckRoom.close();
+                rsSelectIdWater.close();
+                rsSelectIdElectric.close();
+                psInsertBill.close();
+                psInsertInitWaterIndex.close();
+                psInsertInitElectricIndex.close();
+                rsSelectIdRender.close();
+            }
+            if(psSelectOldWaterIndi != null && psSelectIdRender != null && psSelectInitIndicator != null && psSelectIdWater != null &&
+               psSelectIdElectric != null && psCheckRoom != null && psSelectOldElecIndi != null) {
+                psSelectOldWaterIndi.close();
+                psSelectIdRender.close();
+                psSelectInitIndicator.close();
+                psSelectIdWater.close();
+                psSelectIdElectric.close();
+                psCheckRoom.close();
+                psSelectOldElecIndi.close();
+            }
+            if(conn != null) {
+                conn.close();
+            }
+        }
+    }
+
+//xu ly hoa don
+    //lay ten tu tbv mainController sang billController
+    public static void getRoomName(ActionEvent event, String roomName, String renderName) throws SQLException {
+        Connection conn = null;
+        PreparedStatement psSelect = null, psSelectIdElectric = null, psSelectIdWater = null, psSelectWaterIndi = null, psSelectElectricIndi = null;
+        ResultSet rsSelect = null, rsSelectIdElectric = null, rsSelectIdWater = null, rsSelectWaterIndi = null, rsSelectElectricIndi = null;
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn != null;
+            //lay id loai dich vu dien, nuoc
+            psSelectIdElectric = conn.prepareStatement("SELECT id_serviceType FROM tbl_serviceType WHERE serviceName LIKE '%điện%' OR serviceName LIKE '%dien%'");
+            rsSelectIdElectric = psSelectIdElectric.executeQuery();
+            psSelectIdWater = conn.prepareStatement("SELECT id_serviceType FROM tbl_serviceType WHERE serviceName LIKE '%nước%' OR serviceName LIKE '%nuoc%'");
+            rsSelectIdWater = psSelectIdWater.executeQuery();
+
+            psSelect = conn.prepareStatement("SELECT id_room, roomName, roomPrice FROM tbl_roomType JOIN tbl_room ON tbl_roomType.id_roomType = tbl_room.id_roomType WHERE roomName = ?");
+            psSelect.setString(1, roomName);
+            rsSelect = psSelect.executeQuery();
+
+            while(rsSelect.next() && rsSelectIdElectric.next() && rsSelectIdWater.next()) {
+                String rt_roomName = rsSelect.getString("roomName");
+                BigDecimal rt_roomPrice = rsSelect.getBigDecimal("roomPrice");
+                int rt_id_room = rsSelect.getInt("id_room");
+                int rt_id_electric = rsSelectIdElectric.getInt("id_serviceType");
+                int rt_id_water = rsSelectIdWater.getInt("id_serviceType");
+
+                psSelectElectricIndi = conn.prepareStatement("SELECT old_indicator FROM tbl_serviceType JOIN tbl_service ON tbl_serviceType.id_serviceType = tbl_service.id_serviceType JOIN tbl_room ON tbl_service.id_room = tbl_room.id_room WHERE tbl_service.id_serviceType = ? AND tbl_room.id_room = ?");
+                psSelectElectricIndi.setInt(1, rt_id_electric);
+                psSelectElectricIndi.setInt(2, rt_id_room);
+                rsSelectElectricIndi = psSelectElectricIndi.executeQuery();
+                psSelectWaterIndi = conn.prepareStatement("SELECT old_indicator FROM tbl_serviceType JOIN tbl_service ON tbl_serviceType.id_serviceType = tbl_service.id_serviceType JOIN tbl_room ON tbl_service.id_room = tbl_room.id_room WHERE tbl_service.id_serviceType = ? AND tbl_room.id_room = ?");
+                psSelectWaterIndi.setInt(1, rt_id_water);
+                psSelectWaterIndi.setInt(2, rt_id_room);
+                rsSelectWaterIndi = psSelectWaterIndi.executeQuery();
+
+                while(rsSelectElectricIndi.next() && rsSelectWaterIndi.next()) {
+                    int rt_old_electric = rsSelectElectricIndi.getInt("old_indicator");
+                    int rt_old_water = rsSelectWaterIndi.getInt("old_indicator");
+
+                    Stage stage = new Stage();
+                    Parent viewBill = null;
+                    FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(DatabaseDriver.class.getResource("/FXMLs/Bill.fxml")));
+                    try {
+                        viewBill = loader.load();
+                        BillController billController = loader.getController();
+                        billController.setRoomNamePrice(rt_roomName, rt_roomPrice, rt_old_electric, rt_old_water, renderName);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    stage.setTitle("Hóa đơn");
+                    stage.getIcons().add(new Image(String.valueOf(DatabaseDriver.class.getResource("/Images/icon.png"))));
+                    stage.setScene(new Scene(viewBill));
+                    stage.show();
+                }
+
+            }
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            if(rsSelect != null && rsSelectIdElectric != null && rsSelectIdWater != null && rsSelectWaterIndi != null &&
+                    rsSelectElectricIndi != null) {
+                rsSelect.close();
+                rsSelectIdElectric.close();
+                rsSelectIdWater.close();
+                rsSelectWaterIndi.close();
+                rsSelectElectricIndi.close();
+            }
+            if(psSelect != null && psSelectIdElectric != null && psSelectIdWater != null && psSelectWaterIndi != null &&
+                    psSelectElectricIndi != null) {
+                psSelect.close();
+                psSelectIdElectric.close();
+                psSelectIdWater.close();
+                psSelectWaterIndi.close();
+                psSelectElectricIndi.close();
+
+            }
+            if(conn != null) {
+                conn.close();
+            }
+        }
+    }
+
+    //tinh toan tien dich vu khac ngoai dien va nuoc
+    public static int calculatorOtherBill() throws SQLException {
+        Connection conn = null;
+        PreparedStatement psSelectOtherPrice = null;
+        ResultSet rsSelectOtherPrice = null;
+
+        int otherBill = 0;
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn != null;
+
+            psSelectOtherPrice = conn.prepareStatement("SELECT servicePrice FROM tbl_serviceType WHERE (serviceName NOT LIKE '%dien%' AND serviceName NOT LIKE '%điện%') AND (serviceName NOT LIKE '%nước%' AND serviceName NOT LIKE '%nuoc%')");
+            rsSelectOtherPrice = psSelectOtherPrice.executeQuery();
+
+            while(rsSelectOtherPrice.next()) {
+                int rt_otherPriceItem = rsSelectOtherPrice.getInt("servicePrice");
+                otherBill += rt_otherPriceItem;
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            if(rsSelectOtherPrice != null) {
+                rsSelectOtherPrice.close();
+            }
+            if(psSelectOtherPrice != null) {
+                psSelectOtherPrice.close();
+            }
+            if(conn != null) {
+                conn.close();
+            }
+        }
+        return otherBill;
     }
 }
 

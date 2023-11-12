@@ -10,10 +10,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quanlyphongtro.Controllers.CheckInController">
+<AnchorPane prefHeight="580.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.quanlyphongtro.Controllers.CheckInController">
 
-    <Text layoutX="272.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Đăng ký phòng" />
-    <AnchorPane layoutX="25.0" layoutY="62.0" prefHeight="425.0" prefWidth="627.0" styleClass="form_container" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="60.0">
+    <Text layoutX="272.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Đăng ký phòng" AnchorPane.leftAnchor="238.0" AnchorPane.rightAnchor="238.0" AnchorPane.topAnchor="14.0" />
+    <AnchorPane layoutX="25.0" layoutY="62.0" prefHeight="500.0" prefWidth="627.0" styleClass="form_container" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="60.0">
         <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="220.0" prefWidth="600.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
             <Text fill="#c7c6c6" layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Thông tin khách hàng:" />
             <TextField fx:id="tf_render_name" layoutX="170.0" layoutY="43.0" promptText="Nhập tên khách hàng..." styleClass="tf" AnchorPane.leftAnchor="170.0" />
@@ -41,6 +41,10 @@
             <DatePicker fx:id="dp_rend_date" layoutX="400.0" layoutY="71.0" prefWidth="150.0" promptText="MM-DD-YYYY" AnchorPane.leftAnchor="400.0" />
             <Label layoutX="316.0" layoutY="38.0" text="Tiền cọc:" AnchorPane.leftAnchor="316.0" />
             <TextField fx:id="tf_deposit" layoutX="400.0" layoutY="34.0" prefWidth="150.0" promptText="Nhập tiền cọc..." styleClass="info_rend" AnchorPane.leftAnchor="400.0" />
+         <Label layoutX="28.0" layoutY="106.0" prefHeight="48.0" prefWidth="87.0" text="Chỉ số điện ban đầu:" wrapText="true" AnchorPane.leftAnchor="28.0" />
+         <TextField fx:id="tf_init_electric" layoutX="131.0" layoutY="118.0" styleClass="info_rend" AnchorPane.leftAnchor="130.0" />
+         <Label layoutX="316.0" layoutY="108.0" prefHeight="48.0" prefWidth="87.0" text="Chỉ số nước ban đầu:" wrapText="true" AnchorPane.leftAnchor="316.0" />
+         <TextField fx:id="tf_init_water" layoutX="400.0" layoutY="117.0" prefHeight="29.0" prefWidth="126.0" styleClass="info_rend" AnchorPane.leftAnchor="400.0" />
         </AnchorPane>
         <Button fx:id="btn_check_in" layoutX="238.0" layoutY="376.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="101.0" text="Đăng ký" AnchorPane.bottomAnchor="14.400000000000034" AnchorPane.leftAnchor="238.0" AnchorPane.rightAnchor="239.0" />
     </AnchorPane>

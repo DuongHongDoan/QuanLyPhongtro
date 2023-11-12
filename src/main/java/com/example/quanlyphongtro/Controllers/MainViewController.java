@@ -4,17 +4,24 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
 import com.example.quanlyphongtro.Models.*;
+
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -313,7 +320,7 @@ public class MainViewController implements Initializable {
 
         //nut checkIn phong, nut thanh toan
         btn_rent.setOnAction(e -> Model.getInstance().getViewFactory().showCheckInWindow());
-        btn_pay.setOnAction(e -> Model.getInstance().getViewFactory().showBillWindow());
+        btn_pay.setOnAction(this::clickPay);
 
         //nut sua, xoa khach thue
         btn_edit.setOnAction(this::editInfo);
@@ -351,6 +358,22 @@ public class MainViewController implements Initializable {
         btn_logout.setOnAction(e -> onMoveLogin());
     }
 
+    private void clickPay(ActionEvent event) {
+        InfoRendRoomData infoRow = tbv_list_customer.getSelectionModel().getSelectedItem();
+        int n = tbv_list_customer.getSelectionModel().getSelectedIndex();
+
+        if ((n - 1) < -1) {
+            return;
+        }
+
+        String roomName = infoRow.getRoomName();
+        String renderName = infoRow.getFullname();
+        try {
+            DatabaseDriver.getRoomName(event, roomName, renderName);
+        }catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
     private void delService(ActionEvent event) {
         if(tf_service_name.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);

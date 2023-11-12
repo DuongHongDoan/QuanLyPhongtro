@@ -47,6 +47,12 @@ public class CheckInController implements Initializable {
     @FXML
     public TextField tf_render_name;
 
+    @FXML
+    public TextField tf_init_electric;
+
+    @FXML
+    public TextField tf_init_water;
+
 
     ObservableList<roomData> emptyRoomList;
     @Override
@@ -73,7 +79,8 @@ public class CheckInController implements Initializable {
     private void onCheckIn(ActionEvent event) {
         if(tf_render_name.getText().isEmpty() || cb_gender.getSelectionModel().isEmpty() || tf_cccd.getText().isEmpty() ||
                 tf_phone.getText().isEmpty() || tf_home_town.getText().isEmpty() || cb_room_name.getSelectionModel().isEmpty() ||
-                lbl_room_type.getText().isEmpty() || dp_rend_date.getValue() == null) {
+                lbl_room_type.getText().isEmpty() || dp_rend_date.getValue() == null || tf_init_electric.getText().isEmpty() ||
+                tf_init_water.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Thông báo");
             alert.setContentText("Vui lòng điền đầy đủ thông tin!");
@@ -105,7 +112,8 @@ public class CheckInController implements Initializable {
                     String roomName = cb_room_name.getSelectionModel().getSelectedItem().getRoomName();
                     DatabaseDriver.checkIn(event, tf_render_name.getText(), cb_gender.getValue(), tf_cccd.getText(),
                             tf_phone.getText(), tf_home_town.getText(), roomName,
-                            Double.valueOf(tf_deposit.getText()), Date.valueOf(dp_rend_date.getValue()));
+                            Double.valueOf(tf_deposit.getText()), Date.valueOf(dp_rend_date.getValue()),
+                            Integer.parseInt(tf_init_electric.getText()),Integer.parseInt(tf_init_water.getText()));
                     MainViewController.reloadRenderList();
                 }
             }catch (Exception e) {
