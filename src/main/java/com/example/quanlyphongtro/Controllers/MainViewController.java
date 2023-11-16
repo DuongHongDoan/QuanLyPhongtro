@@ -4,29 +4,26 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
 import com.example.quanlyphongtro.Models.*;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.scene.input.MouseEvent;
 
 public class MainViewController implements Initializable {
     @FXML
@@ -183,7 +180,7 @@ public class MainViewController implements Initializable {
     public TableView<serviceData> tbv_service_list;
 
     @FXML
-    public TableView<?> tbv_bill_list;
+    public TableView<billData> tbv_bill_list;
 
     @FXML
     public TextField tf_edit_cccd;
@@ -253,6 +250,7 @@ public class MainViewController implements Initializable {
     ObservableList<roomData> roomDataLists;
     static ObservableList<InfoRendRoomData> renderList;
     ObservableList<serviceData> serviceDataList;
+    ObservableList<billData> billDataList;
 
     public static void reloadRenderList() throws SQLException {
         renderList = DatabaseDriver.getRenderList();
@@ -340,19 +338,22 @@ public class MainViewController implements Initializable {
         try {
             showRoomList();
             showRenderList();
+            showServiceList();
+            showBillList();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        showServiceList();
 
         //bam vao tung dong trong tableView, hien du lieu ra các o tai Quan ly phong
         tbv_list_room.setOnMouseClicked(e -> clickItemRoom());
         tbv_list_customer.setOnMouseClicked(e -> clickItemRender());
         tbv_service_list.setOnMouseClicked(e -> clickItemService());
+        tbv_bill_list.setOnMouseClicked(this::clickItemBill);
 
         //o tim kiem
         onSearchRoom();
         onSearchRender();
+        onSearchBill();
 
         //nut dang xuat
         btn_logout.setOnAction(e -> onMoveLogin());
@@ -368,11 +369,19 @@ public class MainViewController implements Initializable {
 
         String roomName = infoRow.getRoomName();
         String renderName = infoRow.getFullname();
-        try {
-            DatabaseDriver.getRoomName(event, roomName, renderName);
-        }catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+//        Date date_created = infoRow.getRendDate();
+//        if((date_created.getMonth()+1) <= LocalDate.now().getMonthValue()) {
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("Thông báo");
+//            alert.setContentText("Hãy tạo hóa đơn vào tháng kế tiếp!");
+//            alert.show();
+//        }else{
+            try {
+                DatabaseDriver.getRoomName(event, roomName, renderName);
+            }catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+//        }
     }
     private void delService(ActionEvent event) {
         if(tf_service_name.getText().isEmpty()) {
@@ -565,6 +574,12 @@ public class MainViewController implements Initializable {
             view_manage_service.setVisible(true);
 
             showServiceList();
+            try {
+                showBillList();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            onSearchBill();
             clearService();
 
             btn_home.setStyle("-fx-background-color: transparent;");
@@ -867,6 +882,19 @@ public class MainViewController implements Initializable {
         tf_service_price.setText(String.valueOf(serRow.getServicePrice()));
     }
 
+    private void clickItemBill(MouseEvent mouseEvent) {
+        billData billRow = tbv_bill_list.getSelectionModel().getSelectedItem();
+        int n = tbv_bill_list.getSelectionModel().getSelectedIndex();
+
+        if((n-1) < -1) {
+            return;
+        }
+
+        String roomName = billRow.getRoomName();
+        DatabaseDriver.getBillDetail(mouseEvent, roomName);
+        //phai viet dbdriver de hien thi bill khi nhan vao dong
+    }
+
     public void showRoomList() throws SQLException {
         roomDataLists = DatabaseDriver.getRoomList();
         col_room_name.setCellValueFactory(new PropertyValueFactory<>("roomName"));
@@ -898,6 +926,16 @@ public class MainViewController implements Initializable {
         col_service_price.setCellValueFactory(new PropertyValueFactory<>("servicePrice"));
 
         tbv_service_list.setItems(serviceDataList);
+    }
+
+    private void showBillList() throws SQLException {
+        billDataList = DatabaseDriver.getBillList();
+
+        col_billDetail_roomName.setCellValueFactory(new PropertyValueFactory<>("roomName"));
+        col_billDetail_status.setCellValueFactory(new PropertyValueFactory<>("paid"));
+        col_billDetail_paidDate.setCellValueFactory(new PropertyValueFactory<>("date_created"));
+
+        tbv_bill_list.setItems(billDataList);
     }
 
     private void clearRoom() {
@@ -988,6 +1026,35 @@ public class MainViewController implements Initializable {
 
         sortList.comparatorProperty().bind(tbv_list_customer.comparatorProperty());
         tbv_list_customer.setItems(sortList);
+    }
+
+    private void onSearchBill() {
+        FilteredList<billData> filter = new FilteredList<>(billDataList, e-> true);
+
+        tf_search_bill.textProperty().addListener((Observable, oldValue, newValue) ->{
+
+            filter.setPredicate(predicateMedicineData ->{
+
+                if(newValue == null || newValue.isEmpty()){
+                    return true;
+                }
+
+                String searchKey = newValue.toLowerCase();
+
+                if(predicateMedicineData.getRoomName().toLowerCase().contains(searchKey)){
+                    return true;
+                }else if(predicateMedicineData.getPaid().toLowerCase().contains(searchKey)){
+                    return true;
+                }else if(predicateMedicineData.getDate_created().toString().contains(searchKey)){
+                    return true;
+                }else return false;
+            });
+        });
+
+        SortedList<billData> sortList = new SortedList<>(filter);
+
+        sortList.comparatorProperty().bind(tbv_bill_list.comparatorProperty());
+        tbv_bill_list.setItems(sortList);
     }
 
     //click dang xuat

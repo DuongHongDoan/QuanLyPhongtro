@@ -22,6 +22,9 @@ public class BillController implements Initializable {
     public Button btn_bill_confirm;
 
     @FXML
+    public Button btn_bill_edit;
+
+    @FXML
     public RadioButton rad_bill_notPay;
 
     @FXML
@@ -31,7 +34,7 @@ public class BillController implements Initializable {
     public TextField tf_bill_boss;
 
     @FXML
-    public TextField tf_bill_electricMoney;
+    public Label tf_bill_electricMoney;
 
     @FXML
     public TextField tf_bill_newElectricIndex;
@@ -58,17 +61,18 @@ public class BillController implements Initializable {
     public TextField tf_bill_roomPrice;
 
     @FXML
-    public TextField tf_bill_serviceOther;
+    public Label tf_bill_serviceOther;
 
     @FXML
-    public TextField tf_bill_sumMoney;
+    public Label tf_bill_sumMoney;
 
     @FXML
-    public TextField tf_bill_waterMoney;
+    public Label tf_bill_waterMoney;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         btn_bill_confirm.setOnAction(this::onSubmit);
+        btn_bill_edit.setOnAction(this::onEdit);
 
     //tinh toan tien thu
         //lang nghe su thay doi trong o textField chi so moi cua dien va nuoc, tien dich vu khac, tien phong
@@ -203,6 +207,75 @@ public class BillController implements Initializable {
         }
     }
 
+    private void onEdit(ActionEvent event) {
+        if(tf_bill_roomName.getText().isEmpty() || tf_bill_roomPrice.getText().isEmpty() || tf_bill_oldElectricIndex.getText().isEmpty() ||
+                tf_bill_newElectricIndex.getText().isEmpty() || tf_bill_oldWaterIndex.getText().isEmpty() || tf_bill_newWaterIndex.getText().isEmpty() ||
+                dp_date_create.getValue() == null || tf_bill_boss.getText().isEmpty() || tf_bill_serviceOther.getText().isEmpty() ||
+                tf_bill_electricMoney.getText().isEmpty() || tf_bill_waterMoney.getText().isEmpty() || tf_bill_sumMoney.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Thông báo");
+            alert.setContentText("Vui lòng không để trống!");
+            alert.show();
+        }
+        else {
+            if(rad_bill_notPay.isSelected()) {
+                try {
+                    if (dp_date_create.getValue().isAfter(LocalDate.now())) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Thông báo");
+                        alert.setContentText("Ngày nhập không được lớn hơn ngày hiện tại!");
+                        alert.show();
+                    }else if (Integer.parseInt(tf_bill_newElectricIndex.getText()) < Integer.parseInt(tf_bill_oldElectricIndex.getText())) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Thông báo");
+                        alert.setContentText("Vui lòng nhập chỉ số điện mới lớn hơn chỉ số điện cũ!");
+                        alert.show();
+                    }else if (Integer.parseInt(tf_bill_newWaterIndex.getText()) < Integer.parseInt(tf_bill_oldWaterIndex.getText())) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Thông báo");
+                        alert.setContentText("Vui lòng nhập chỉ số nước mới lớn hơn chỉ số nước cũ!");
+                        alert.show();
+                    } else {
+                        DatabaseDriver.editBill(event, tf_bill_roomName.getText(), Double.valueOf(tf_bill_roomPrice.getText()),
+                                Date.valueOf(dp_date_create.getValue()), tf_bill_boss.getText(),
+                                Double.valueOf(tf_bill_serviceOther.getText()), Double.valueOf(tf_bill_electricMoney.getText()),
+                                Double.valueOf(tf_bill_waterMoney.getText()), Double.valueOf(tf_bill_sumMoney.getText()),
+                                tf_bill_note.getText(), rad_bill_notPay.getText());
+                    }
+                } catch (SQLException e) {
+                    System.out.println("Lỗi tạo hóa đơn " + e.getMessage());
+                }
+            }else {
+                try {
+                    if (dp_date_create.getValue().isAfter(LocalDate.now())) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Thông báo");
+                        alert.setContentText("Ngày nhập không được lớn hơn ngày hiện tại!");
+                        alert.show();
+                    }else if (Integer.parseInt(tf_bill_newElectricIndex.getText()) < Integer.parseInt(tf_bill_oldElectricIndex.getText())) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Thông báo");
+                        alert.setContentText("Vui lòng nhập chỉ số điện mới lớn hơn chỉ số điện cũ!");
+                        alert.show();
+                    }else if (Integer.parseInt(tf_bill_newWaterIndex.getText()) < Integer.parseInt(tf_bill_oldWaterIndex.getText())) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Thông báo");
+                        alert.setContentText("Vui lòng nhập chỉ số nước mới lớn hơn chỉ số nước cũ!");
+                        alert.show();
+                    } else {
+                        DatabaseDriver.editBill(event, tf_bill_roomName.getText(), Double.valueOf(tf_bill_roomPrice.getText()),
+                                Date.valueOf(dp_date_create.getValue()), tf_bill_boss.getText(),
+                                Double.valueOf(tf_bill_serviceOther.getText()), Double.valueOf(tf_bill_electricMoney.getText()),
+                                Double.valueOf(tf_bill_waterMoney.getText()), Double.valueOf(tf_bill_sumMoney.getText()),
+                                tf_bill_note.getText(), rad_bill_paid.getText());
+                    }
+                } catch (SQLException e) {
+                    System.out.println("Lỗi tạo hóa đơn " + e.getMessage());
+                }
+            }
+        }
+    }
+
     private void onSubmit(ActionEvent event) {
         if(tf_bill_roomName.getText().isEmpty() || tf_bill_roomPrice.getText().isEmpty() || tf_bill_oldElectricIndex.getText().isEmpty() ||
             tf_bill_newElectricIndex.getText().isEmpty() || tf_bill_oldWaterIndex.getText().isEmpty() || tf_bill_newWaterIndex.getText().isEmpty() ||
@@ -233,7 +306,7 @@ public class BillController implements Initializable {
                         alert.show();
                     } else {
                         DatabaseDriver.createBill(event, tf_bill_roomName.getText(), Double.valueOf(tf_bill_newElectricIndex.getText()),
-                                Double.valueOf(tf_bill_newWaterIndex.getText()), Date.valueOf(dp_date_create.getValue()),
+                                Double.valueOf(tf_bill_newWaterIndex.getText()), Date.valueOf(dp_date_create.getValue()), tf_bill_boss.getText(),
                                 Double.valueOf(tf_bill_serviceOther.getText()), Double.valueOf(tf_bill_electricMoney.getText()),
                                 Double.valueOf(tf_bill_waterMoney.getText()), Double.valueOf(tf_bill_sumMoney.getText()),
                                 tf_bill_note.getText(), rad_bill_notPay.getText(), lbl_renderName.getText());
@@ -260,7 +333,7 @@ public class BillController implements Initializable {
                         alert.show();
                     } else {
                         DatabaseDriver.createBill(event, tf_bill_roomName.getText(), Double.valueOf(tf_bill_newElectricIndex.getText()),
-                                Double.valueOf(tf_bill_newWaterIndex.getText()), Date.valueOf(dp_date_create.getValue()),
+                                Double.valueOf(tf_bill_newWaterIndex.getText()), Date.valueOf(dp_date_create.getValue()), tf_bill_boss.getText(),
                                 Double.valueOf(tf_bill_serviceOther.getText()), Double.valueOf(tf_bill_electricMoney.getText()),
                                 Double.valueOf(tf_bill_waterMoney.getText()), Double.valueOf(tf_bill_sumMoney.getText()),
                                 tf_bill_note.getText(), rad_bill_paid.getText(), lbl_renderName.getText());
@@ -277,5 +350,29 @@ public class BillController implements Initializable {
         tf_bill_oldElectricIndex.setText(String.valueOf(oldElectric));
         tf_bill_oldWaterIndex.setText(String.valueOf(oldWater));
         lbl_renderName.setText(renderName);
+    }
+
+    public void setBill (String roomName, BigDecimal roomPrice, int oldElectric, int newElectric, int oldWater, int newWater,
+                         Date dateCreated, String billBoss, BigDecimal otherBill, BigDecimal electricBill, BigDecimal waterBill,
+                         BigDecimal sumBill, String note, String paid, String fullName) {
+        tf_bill_roomName.setText(roomName);
+        tf_bill_roomPrice.setText(String.valueOf(roomPrice));
+        tf_bill_oldElectricIndex.setText(String.valueOf(oldElectric));
+        tf_bill_newElectricIndex.setText(String.valueOf(newElectric));
+        tf_bill_oldWaterIndex.setText(String.valueOf(oldWater));
+        tf_bill_newWaterIndex.setText(String.valueOf(newWater));
+        dp_date_create.setValue(dateCreated.toLocalDate());
+        tf_bill_boss.setText(billBoss);
+        tf_bill_serviceOther.setText(String.valueOf(otherBill));
+        tf_bill_electricMoney.setText(String.valueOf(electricBill));
+        tf_bill_waterMoney.setText(String.valueOf(waterBill));
+        tf_bill_sumMoney.setText(String.valueOf(sumBill));
+        tf_bill_note.setText(note);
+        if(paid.equals("Đã đóng")) {
+            rad_bill_paid.setSelected(true);
+        } else if (paid.equals("Chưa đóng")) {
+            rad_bill_notPay.setSelected(true);
+        }
+        lbl_renderName.setText(fullName);
     }
 }

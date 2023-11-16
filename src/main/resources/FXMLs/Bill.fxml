@@ -36,7 +36,7 @@
                         <Label prefHeight="22.0" prefWidth="112.0" text="Tiền phòng:" />
                         <TextField fx:id="tf_bill_roomPrice" prefHeight="32.0" prefWidth="160.0">
                            <HBox.margin>
-                              <Insets left="40.0" />
+                              <Insets left="36.0" />
                            </HBox.margin>
                         </TextField>
                      </children>
@@ -46,7 +46,7 @@
                         <Label prefHeight="22.0" prefWidth="130.0" text="Chỉ số điện cũ:" />
                         <TextField fx:id="tf_bill_oldElectricIndex" prefHeight="32.0" prefWidth="160.0">
                            <HBox.margin>
-                              <Insets left="25.0" />
+                              <Insets left="18.0" />
                            </HBox.margin>
                         </TextField>
                      </children>
@@ -100,7 +100,7 @@
                         <Label prefHeight="22.0" prefWidth="119.0" text="Người thu tiền:" />
                         <TextField fx:id="tf_bill_boss" prefHeight="32.0" prefWidth="130.0">
                            <HBox.margin>
-                              <Insets left="25.0" />
+                              <Insets left="20.0" />
                            </HBox.margin>
                         </TextField>
                      </children>
@@ -108,41 +108,41 @@
                   <HBox layoutX="10.0" layoutY="10.0" prefHeight="40.0" prefWidth="290.0" styleClass="hb_field">
                      <children>
                         <Label prefHeight="22.0" prefWidth="123.0" text="Tiền dịch vụ khác:" />
-                        <TextField fx:id="tf_bill_serviceOther" prefHeight="32.0" prefWidth="130.0">
+                        <Label fx:id="tf_bill_serviceOther" prefHeight="32.0" prefWidth="130.0" textFill="#b9afaf">
                            <HBox.margin>
                               <Insets left="10.0" />
                            </HBox.margin>
-                        </TextField>
+                        </Label>
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="50.0" prefHeight="40.0" prefWidth="290.0" styleClass="hb_field">
                      <children>
                         <Label prefHeight="22.0" prefWidth="72.0" text="Tiền điện:" />
-                        <TextField fx:id="tf_bill_electricMoney" prefHeight="32.0" prefWidth="130.0">
+                        <Label fx:id="tf_bill_electricMoney" prefHeight="32.0" prefWidth="130.0">
                            <HBox.margin>
                               <Insets left="62.0" />
                            </HBox.margin>
-                        </TextField>
+                        </Label>
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="90.0" prefHeight="40.0" prefWidth="290.0" styleClass="hb_field">
                      <children>
                         <Label prefHeight="22.0" prefWidth="82.0" text="Tiền nước:" />
-                        <TextField fx:id="tf_bill_waterMoney" prefHeight="32.0" prefWidth="130.0">
+                        <Label fx:id="tf_bill_waterMoney" prefHeight="32.0" prefWidth="130.0">
                            <HBox.margin>
                               <Insets left="56.0" />
                            </HBox.margin>
-                        </TextField>
+                        </Label>
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="130.0" prefHeight="40.0" prefWidth="290.0" styleClass="hb_field">
                      <children>
                         <Label prefHeight="22.0" prefWidth="83.0" text="Tổng thu:" />
-                        <TextField fx:id="tf_bill_sumMoney" prefHeight="32.0" prefWidth="130.0">
+                        <Label fx:id="tf_bill_sumMoney" prefHeight="32.0" prefWidth="130.0">
                            <HBox.margin>
-                              <Insets left="60.0" />
+                              <Insets left="54.0" />
                            </HBox.margin>
-                        </TextField>
+                        </Label>
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="210.0" prefHeight="40.0" prefWidth="290.0" styleClass="hb_field">
@@ -175,13 +175,18 @@
                   </HBox>
                </children>
             </VBox>
-            <Button fx:id="btn_bill_confirm" layoutX="236.0" layoutY="352.0" mnemonicParsing="false" text="Xác nhận" AnchorPane.bottomAnchor="10.0" />
             <Label layoutX="398.0" layoutY="312.0" text="Người thuê phòng" AnchorPane.bottomAnchor="110.0" AnchorPane.leftAnchor="380.0" AnchorPane.rightAnchor="64.0" />
             <Label fx:id="lbl_renderName" layoutX="396.0" layoutY="341.0" prefHeight="70.0" prefWidth="120.0" style="-fx-font-weight: bold; -fx-text-alignment: center;" text="label" textFill="#ffbb00" wrapText="true" AnchorPane.leftAnchor="380.0" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="320.0">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
+            <HBox layoutX="161.0" layoutY="352.0" prefHeight="70.0" prefWidth="250.0" style="-fx-alignment: center; -fx-spacing: 30;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="180.0">
+               <children>
+                  <Button fx:id="btn_bill_edit" mnemonicParsing="false" text="Sửa" />
+                  <Button fx:id="btn_bill_confirm" mnemonicParsing="false" text="Xác nhận" />
+               </children>
+            </HBox>
          </children>
       </AnchorPane>
    </children>

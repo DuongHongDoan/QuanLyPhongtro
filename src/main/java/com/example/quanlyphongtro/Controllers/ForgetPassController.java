@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -63,8 +64,15 @@ public class ForgetPassController implements Initializable {
         btn_update.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                String passwd = SignupController.getMD5Key(tf_new_pass.getText());
-                DatabaseDriver.updatePass(event, tf_username.getText(), combo_QA.getValue(), tf_QA.getText(), passwd);
+                if (!tf_enter_new_pass.getText().equals(tf_new_pass.getText())) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Thông báo");
+                    alert.setContentText("Mật khẩu nhập lại không khớp!");
+                    alert.show();
+                } else {
+                    String passwd = SignupController.getMD5Key(tf_new_pass.getText());
+                    DatabaseDriver.updatePass(event, tf_username.getText(), combo_QA.getValue(), tf_QA.getText(), passwd);
+                }
             }
         });
     }
