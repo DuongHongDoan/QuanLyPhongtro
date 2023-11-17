@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class DatabaseDriver {
@@ -493,6 +494,44 @@ public class DatabaseDriver {
         }
 
         return cnt;
+    }
+
+    //thong ke thu nhap theo thang
+    public static double getTotalByMonth() {
+        Connection conn = null;
+        PreparedStatement psSelect = null;
+        ResultSet rsSelect = null;
+        double totalIncome = 0;
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn!= null;
+            psSelect = conn.prepareStatement("SELECT date_created, sum_bill FROM tbl_bill");
+            rsSelect = psSelect.executeQuery();
+
+            int currentMonth = LocalDate.now().getMonthValue();
+
+            while(rsSelect.next()) {
+                LocalDate rt_date = rsSelect.getDate("date_created").toLocalDate();
+                double rt_sum_bill = rsSelect.getDouble("sum_bill");
+                if(rt_date.getMonthValue() == currentMonth) {
+                    totalIncome += rt_sum_bill;
+                }
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            try {
+                if(conn!=null && psSelect!=null && rsSelect!=null) {
+                    conn.close();
+                    psSelect.close();
+                    rsSelect.close();
+                }
+            }catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        return totalIncome;
     }
 
     //nut "them", "sua", "xoa" du lieu cho tbl_roomType o ManageRoom
@@ -1948,12 +1987,12 @@ public class DatabaseDriver {
             psSelect.setString(1, roomName);
             rsSelect = psSelect.executeQuery();
 
-            if(rsCheck.isBeforeFirst()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Thông báo");
-                alert.setContentText("Phòng đã được tạo hóa đơn!");
-                alert.show();
-            }else {
+//            if(rsCheck.isBeforeFirst()) {
+//                Alert alert = new Alert(Alert.AlertType.ERROR);
+//                alert.setTitle("Thông báo");
+//                alert.setContentText("Phòng đã được tạo hóa đơn!");
+//                alert.show();
+//            }else {
                 while(rsSelect.next() && rsSelectIdElectric.next() && rsSelectIdWater.next()) {
                     String rt_roomName = rsSelect.getString("roomName");
                     BigDecimal rt_roomPrice = rsSelect.getBigDecimal("roomPrice");
@@ -1961,18 +2000,18 @@ public class DatabaseDriver {
                     int rt_id_electric = rsSelectIdElectric.getInt("id_serviceType");
                     int rt_id_water = rsSelectIdWater.getInt("id_serviceType");
 
-                    psSelectElectricIndi = conn.prepareStatement("SELECT old_indicator FROM tbl_serviceType JOIN tbl_service ON tbl_serviceType.id_serviceType = tbl_service.id_serviceType JOIN tbl_room ON tbl_service.id_room = tbl_room.id_room WHERE tbl_service.id_serviceType = ? AND tbl_room.id_room = ?");
+                    psSelectElectricIndi = conn.prepareStatement("SELECT new_indicator FROM tbl_serviceType JOIN tbl_service ON tbl_serviceType.id_serviceType = tbl_service.id_serviceType JOIN tbl_room ON tbl_service.id_room = tbl_room.id_room WHERE tbl_service.id_serviceType = ? AND tbl_room.id_room = ?");
                     psSelectElectricIndi.setInt(1, rt_id_electric);
                     psSelectElectricIndi.setInt(2, rt_id_room);
                     rsSelectElectricIndi = psSelectElectricIndi.executeQuery();
-                    psSelectWaterIndi = conn.prepareStatement("SELECT old_indicator FROM tbl_serviceType JOIN tbl_service ON tbl_serviceType.id_serviceType = tbl_service.id_serviceType JOIN tbl_room ON tbl_service.id_room = tbl_room.id_room WHERE tbl_service.id_serviceType = ? AND tbl_room.id_room = ?");
+                    psSelectWaterIndi = conn.prepareStatement("SELECT new_indicator FROM tbl_serviceType JOIN tbl_service ON tbl_serviceType.id_serviceType = tbl_service.id_serviceType JOIN tbl_room ON tbl_service.id_room = tbl_room.id_room WHERE tbl_service.id_serviceType = ? AND tbl_room.id_room = ?");
                     psSelectWaterIndi.setInt(1, rt_id_water);
                     psSelectWaterIndi.setInt(2, rt_id_room);
                     rsSelectWaterIndi = psSelectWaterIndi.executeQuery();
 
                     while(rsSelectElectricIndi.next() && rsSelectWaterIndi.next()) {
-                        int rt_old_electric = rsSelectElectricIndi.getInt("old_indicator");
-                        int rt_old_water = rsSelectWaterIndi.getInt("old_indicator");
+                        int rt_old_electric = rsSelectElectricIndi.getInt("new_indicator");
+                        int rt_old_water = rsSelectWaterIndi.getInt("new_indicator");
 
                         Stage stage = new Stage();
                         Parent viewBill = null;
@@ -1991,7 +2030,7 @@ public class DatabaseDriver {
                     }
 
                 }
-            }
+//            }
         }catch(Exception e) {
             System.out.println(e.getMessage());
         }finally {

@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 
 import com.example.quanlyphongtro.Models.*;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -286,9 +287,10 @@ public class MainViewController implements Initializable {
 //hien thi so luong thong ke
         //thong ke so phong da duoc thue
         showTotalRendRoom();
-
         //thong ke so nguoi thue
         showTotalRender();
+        //thong ke doanh thu theo thang
+        showTotalByMonth();
 //gan du lieu lay tu db ra comboBox de chon
         //comboBox loai phong
         try {
@@ -376,6 +378,7 @@ public class MainViewController implements Initializable {
 //            alert.setContentText("Hãy tạo hóa đơn vào tháng kế tiếp!");
 //            alert.show();
 //        }else{
+        // Duyệt qua danh sách các dòng
             try {
                 DatabaseDriver.getRoomName(event, roomName, renderName);
             }catch (SQLException e) {
@@ -428,6 +431,12 @@ public class MainViewController implements Initializable {
             showServiceList();
             clearService();
         }
+    }
+
+    private void showTotalByMonth() {
+        double tmp = 0;
+        tmp = DatabaseDriver.getTotalByMonth();
+        lbl_sum_income.setText(decimalFormat.format(tmp));
     }
 
     private void showTotalRender() {
@@ -510,6 +519,8 @@ public class MainViewController implements Initializable {
 
             //thong ke so nguoi thue
             showTotalRender();
+
+            showTotalByMonth();
 
             btn_home.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
                     "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");
