@@ -10,6 +10,9 @@ import com.example.quanlyphongtro.Models.*;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -20,6 +23,9 @@ import java.util.regex.Pattern;
 
 import javafx.fxml.FXML;
 import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.Axis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
@@ -92,7 +98,7 @@ public class MainViewController implements Initializable {
     public Button btn_pay;
 
     @FXML
-    public AreaChart<?, ?> chart_income;
+    public AreaChart<String, Double> chart_income;
 
     @FXML
     public TableColumn<?, ?> col_addr;
@@ -171,6 +177,9 @@ public class MainViewController implements Initializable {
 
     @FXML
     public Label lbl_username_info;
+
+    @FXML
+    public Label lbl_totalIncome;
 
     @FXML
     public TableView<InfoRendRoomData> tbv_list_customer;
@@ -276,6 +285,7 @@ public class MainViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        lbl_totalIncome.setText("Tổng doanh thu tháng " + LocalDate.now().getMonthValue());
         //su kien chuyen view
         btn_home.setOnAction(this::switchView);
         btn_manage_room.setOnAction(this::switchView);
@@ -291,6 +301,8 @@ public class MainViewController implements Initializable {
         showTotalRender();
         //thong ke doanh thu theo thang
         showTotalByMonth();
+        //hien thi bang do doanh thu
+        showIncomeChart();
 //gan du lieu lay tu db ra comboBox de chon
         //comboBox loai phong
         try {
@@ -433,6 +445,88 @@ public class MainViewController implements Initializable {
         }
     }
 
+    private void showIncomeChart() {
+        chart_income.getData().clear();
+        Connection conn = null;
+        PreparedStatement psSelect = null;
+        ResultSet rsSelect = null;
+        double totalIncome1 = 0;
+        double totalIncome2 = 0;
+        double totalIncome3 = 0;
+        double totalIncome4 = 0;
+        double totalIncome5 = 0;
+        double totalIncome6 = 0;
+        double totalIncome7 = 0;
+        double totalIncome8 = 0;
+        double totalIncome9 = 0;
+        double totalIncome10 = 0;
+        double totalIncome11 = 0;
+        double totalIncome12 = 0;
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn!= null;
+            psSelect = conn.prepareStatement("SELECT date_created, sum_bill FROM tbl_bill");
+            rsSelect = psSelect.executeQuery();
+
+            int currentMonth = LocalDate.now().getMonthValue();
+
+            LocalDate rt_date = null;
+            double rt_sum_bill = 0;
+            while(rsSelect.next()) {
+                rt_date = rsSelect.getDate("date_created").toLocalDate();
+                rt_sum_bill = rsSelect.getDouble("sum_bill");
+//                if(rt_date.getMonthValue() == currentMonth) {
+//                    totalIncome += rt_sum_bill;
+//                }
+                switch (rt_date.getMonthValue()) {
+                    case 1 -> totalIncome1 += rt_sum_bill;
+                    case 2 -> totalIncome2 += rt_sum_bill;
+                    case 3 -> totalIncome3 += rt_sum_bill;
+                    case 4 -> totalIncome4 += rt_sum_bill;
+                    case 5 -> totalIncome5 += rt_sum_bill;
+                    case 6 -> totalIncome6 += rt_sum_bill;
+                    case 7 -> totalIncome7 += rt_sum_bill;
+                    case 8 -> totalIncome8 += rt_sum_bill;
+                    case 9 -> totalIncome9 += rt_sum_bill;
+                    case 10 -> totalIncome10 += rt_sum_bill;
+                    case 11 -> totalIncome11 += rt_sum_bill;
+                    case 12 -> totalIncome12 += rt_sum_bill;
+                }
+            }
+
+            XYChart.Series<String, Double> chart = new XYChart.Series<>();
+            assert rt_date != null;
+            chart.getData().add(new XYChart.Data<>(String.valueOf(1), totalIncome1));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(2), totalIncome2));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(3), totalIncome3));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(4), totalIncome4));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(5), totalIncome5));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(6), totalIncome6));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(7), totalIncome7));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(8), totalIncome8));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(9), totalIncome9));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(10), totalIncome10));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(11), totalIncome11));
+            chart.getData().add(new XYChart.Data<>(String.valueOf(12), totalIncome12));
+            chart.setName("Tổng thu nhập của tháng");
+
+            chart_income.getData().add(chart);
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            try {
+                if(conn!=null && psSelect!=null && rsSelect!=null) {
+                    conn.close();
+                    psSelect.close();
+                    rsSelect.close();
+                }
+            }catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
     private void showTotalByMonth() {
         double tmp = 0;
         tmp = DatabaseDriver.getTotalByMonth();
@@ -521,6 +615,7 @@ public class MainViewController implements Initializable {
             showTotalRender();
 
             showTotalByMonth();
+            showIncomeChart();
 
             btn_home.setStyle("-fx-background-color: linear-gradient(to bottom right, #17EA9D, #6078EA);" +
                     "-fx-effect: dropshadow(three-pass-box, #D3D3D3, 0, 0, 0, 0);");

@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -532,6 +533,40 @@ public class DatabaseDriver {
             }
         }
         return totalIncome;
+    }
+
+//thong ke bang ban do, hien thi thu nhap theo thang
+    public static void showChart() {
+        Connection conn = null;
+        PreparedStatement psSelect = null;
+        ResultSet rsSelect = null;
+
+        try {
+            conn = ConnectDB.connectDB();
+            assert conn!= null;
+            psSelect = conn.prepareStatement("SELECT date_created, sum_bill FROM tbl_bill");
+            rsSelect = psSelect.executeQuery();
+
+            XYChart.Series chart = new XYChart.Series();
+            while(rsSelect.next()) {
+                LocalDate rt_date = rsSelect.getDate("date_created").toLocalDate();
+                double rt_sum_bill = rsSelect.getDouble("sum_bill");
+
+                chart.getData().add(new XYChart.Data<>(rt_date.getMonthValue(), rt_sum_bill));
+            }
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }finally {
+            try {
+                if(conn!=null && psSelect!=null && rsSelect!=null) {
+                    conn.close();
+                    psSelect.close();
+                    rsSelect.close();
+                }
+            }catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
     //nut "them", "sua", "xoa" du lieu cho tbl_roomType o ManageRoom
